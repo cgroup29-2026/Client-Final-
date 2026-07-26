@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>התחברות - WorldExplorer</title>
+
+    <link rel="stylesheet" href="../css/StyleSheet.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
+    <script src="../JS/AjaxCall.js"></script>
+</head>
+
+<body class="auth-page-bg">
+    <!-- מסך טעינה - Preloader -->
+    <div id="preloader">
+        <div class="loader-content">
+            <!-- לוגו של גינס עם רקע שקוף -->
+            <p>מוזג את הנתונים... 🍻</p>
+        </div>
+    </div>
+    <header>
+        <div class="logo">
+            <i class="fas fa-globe-americas"></i> WorldExplorer
+        </div>
+        <nav>
+            <ul>
+                <li><a href="../index.html">חזרה לדף הבית</a></li>
+                <li><a href="register.html" class="btn">להרשמה</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="auth-wrapper">
+        <div class="auth-box login-box fade-in-up">
+            <h2 style="font-size: 2rem; margin-bottom: 30px;"><i class="fas fa-sign-in-alt"></i> ברוך שובך</h2>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">דוא"ל</label>
+                    <input type="email" id="email" class="form-control" placeholder="הזן את כתובת המייל שלך" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">סיסמה</label>
+                    <input type="password" id="password" class="form-control" placeholder="הזן סיסמה" required>
+                </div>
+
+                <button id="btnLogin" type="submit" class="btn" style="width: 100%; margin-top: 15px; font-size: 1.2rem;">התחבר</button>
+            </form>
+
+            <p style="margin-top: 25px; color: var(--text-muted);">
+                עדיין אין לך חשבון? <a href="register.html" class="auth-link">הירשם עכשיו</a>
+            </p>
+        </div>
+    </main>
+
+
+</body>
+</html>

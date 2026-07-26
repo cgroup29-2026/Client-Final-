@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>הרשימות שלי - WorldExplorer</title>
+
+    <!-- חיבור לעיצוב הראשי -->
+    <link rel="stylesheet" href="../css/StyleSheet.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <!-- ספריות המפה -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsvectormap/dist/css/jsvectormap.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/jsvectormap"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsvectormap/dist/maps/world.js"></script>
+</head>
+<body class="map-page-bg">
+    <!-- מסך טעינה - Preloader -->
+    <div id="preloader">
+        <div class="loader-content">
+            <!-- לוגו של גינס עם רקע שקוף -->
+            <p>מוזג את הנתונים... 🍻</p>
+        </div>
+    </div>
+    <!-- רקע חלקיקים אינטראקטיבי -->
+    <canvas id="interactiveBg"></canvas>
+    <header>
+        <div class="logo">
+            <i class="fas fa-globe-americas"></i> WorldExplorer
+        </div>
+        <nav>
+            <ul>
+                <li><a href="../index.html">חזרה לדף הבית</a></li>
+                <li><a href="my-lists.html">הרשימות שלי</a></li>
+                <li><a href="quizzes.html">חידונים</a></li>
+
+                <!-- >>> השורה החדשה שהוספנו: כפתור שיזרוק אותו חזרה לדף הבית להתחבר <<< -->
+                <!-- שני הכפתורים הנפרדים - בדיוק כמו בתמונה -->
+                <li id="loginLi" style="display: none;"><a href="../Pages/login.html">התחברות</a></li>
+                <li id="registerLi" style="display: none;"><a href="../Pages/register.html" style="border: 1px solid #3b82f6; border-radius: 20px; padding: 5px 15px;">הרשמה</a></li>
+                <!-- הקישור למנהל -->
+                <li id="adminLinkLi" style="display: none;">
+                    <a href="admin.html" style="color: #f59e0b; font-weight: bold;"><i class="fas fa-crown"></i> פאנל מנהל</a>
+                </li>
+
+                <li id="userGreetingLi" style="display: none;"><span id="userGreeting" style="font-weight: bold; color: #fff; margin: 0 15px;"></span></li>
+
+                <li id="logoutLi" style="display: none;"><a href="#" id="btnLogout">התנתקות</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container fade-in-up" style="max-width: 1400px; margin-top: 40px; margin-bottom: 40px;">
+
+        <div class="map-page-wrapper">
+
+            <!-- עמודת צד: חיפוש ורשימות -->
+            <aside class="lists-sidebar">
+                <div class="list-box search-box">
+                    <h3><i class="fas fa-search"></i> חפש מדינה</h3>
+                    <input type="text" id="mapSearch" placeholder="הקלד שם מדינה..." class="styled-input">
+                </div>
+
+                <div class="list-box">
+                    <h3><i class="fas fa-check-circle" style="color: #2ecc71;"></i> כבר ביקרתי</h3>
+                    <div class="list-items" id="visited-list"></div>
+                </div>
+
+                <div class="list-box">
+                    <h3><i class="fas fa-plane" style="color: #f39c12;"></i> היעד הבא שלי</h3>
+                    <div class="list-items" id="want-list"></div>
+                </div>
+
+                <div class="list-box">
+                    <h3><i class="fas fa-heart" style="color: #ef4444;"></i> מועדפים</h3>
+                    <div class="list-items" id="favorite-list"></div>
+                </div>
+            </aside>
+
+            <!-- עמודה מרכזית: המפה והמקרא -->
+            <section class="map-main-area">
+                <h1 style="color: white; text-align: center; margin-top: 0; font-size: 2.2rem; text-shadow: 0 2px 5px rgba(0,0,0,0.5);">מפת המסעות שלי</h1>
+                <p style="text-align: center; color: #94a3b8; margin-bottom: 25px;">לחץ על מדינה במפה כדי להחליף סטטוס, או סמן ברשימות בצד.</p>
+
+                <!-- מקרא המפה -->
+                <div class="map-legend">
+                    <div class="legend-item"><span class="color-box" style="background: #2ecc71;"></span> הייתי שם</div>
+                    <div class="legend-item"><span class="color-box" style="background: #f39c12;"></span> יעד לטיסה</div>
+                    <div class="legend-item"><span class="color-box" style="background: #ef4444;"></span> מועדפים</div>
+                    <div class="legend-item"><span class="color-box" style="background: #64748b;"></span> לא נשמר</div>
+                </div>
+
+                <!-- מיכל המפה -->
+                <div id="world-map" style="width: 100%; height: 600px;"></div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- חיבור לקובץ ה-AJAX הגלובלי שלנו שיושב בתיקיית JS -->
+    <script src="../JS/AjaxCall.js"></script>
+</body>
+</html>

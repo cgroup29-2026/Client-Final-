@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>פאנל מנהל - WorldExplorer</title>
+    <link rel="stylesheet" href="../css/StyleSheet.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body class="admin-page-bg">
+    <!-- מסך טעינה - Preloader -->
+    <div id="preloader">
+        <div class="loader-content">
+            <!-- לוגו של גינס עם רקע שקוף -->
+            <p>מוזג את הנתונים... 🍻</p>
+        </div>
+    </div>
+    <header>
+        <div class="logo"><i class="fas fa-shield-alt"></i> אזור ניהול</div>
+        <nav>
+            <ul>
+                <li><a href="../index.html">חזרה לאתר</a></li>
+                <li id="logoutLi"><a href="#" id="btnLogout">התנתקות</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container fade-in-up" style="max-width: 1200px; margin-top: 40px;">
+
+        <h1 style="color: white; text-align: center; margin-bottom: 40px;"><i class="fas fa-cogs"></i> לוח בקרת מנהל</h1>
+
+        <!-- כרטיסיות סטטיסטיקה -->
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 50px;">
+            <div class="stat-card">
+                <i class="fas fa-users" style="color: #3b82f6;"></i>
+                <h3 id="statLogins">0</h3>
+                <p>כניסות היום</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-globe" style="color: #2ecc71;"></i>
+                <h3 id="statCountries">0</h3>
+                <p>מדינות במערכת</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-comments" style="color: #f39c12;"></i>
+                <h3 id="statShares">0</h3>
+                <p>שיתופי קהילה</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-heart" style="color: #ef4444;"></i>
+                <h3 id="statSaved">0</h3>
+                <p>מדינות שנשמרו (מקומי)</p>
+            </div>
+        </div>
+
+        <!-- טבלת ניהול משתמשים -->
+        <div class="admin-table-container">
+            <h2 style="color: white; border-bottom: 2px solid #3b82f6; padding-bottom: 10px;">ניהול משתמשים</h2>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>שם משתמש</th>
+                        <th>אימייל</th>
+                        <th>תפקיד</th>
+                        <th>סטטוס נעילה</th>
+                        <th>ניהול הרשאות</th> <!-- העמודה החדשה -->
+                        <th>פעולות</th>
+                    </tr>
+                </thead>
+                <tbody id="adminUsersList">
+                    <!-- ימולא מהשרת -->
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+
+    <script src="../JS/AjaxCall.js"></script>
+</body>
+</html>
