@@ -1,0 +1,101 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>חידונים - WorldExplorer</title>
+
+    <link rel="stylesheet" href="../css/StyleSheet.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body class="quiz-page-bg">
+    <!-- מסך טעינה - Preloader -->
+    <div id="preloader">
+        <div class="loader-content">
+            <!-- לוגו של גינס עם רקע שקוף -->
+            <p>מוזג את הנתונים... 🍻</p>
+        </div>
+    </div>
+    <header>
+        <div class="logo">
+            <i class="fas fa-globe-americas"></i> WorldExplorer
+        </div>
+        <nav>
+            <ul>
+                <li><a href="../index.html">חזרה לדף הבית</a></li>
+                <li><a href="my-lists.html">הרשימות שלי</a></li>
+                <li><a href="quizzes.html">חידונים</a></li>
+
+                <!-- הקישור למנהל -->
+                <li id="adminLinkLi" style="display: none;">
+                    <a href="admin.html" style="color: #f59e0b; font-weight: bold;"><i class="fas fa-crown"></i> פאנל מנהל</a>
+                </li>
+
+                <li id="userGreetingLi" style="display: none;"><span id="userGreeting" style="font-weight: bold; color: #fff; margin: 0 15px;"></span></li>
+                <li id="logoutLi" style="display: none;"><a href="#" id="btnLogout">התנתקות</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container fade-in-up" style="margin-top: 50px; max-width: 800px;">
+
+        <!-- מסך 1: בחירת חידון -->
+        <div id="quizSelectionScreen">
+            <!-- תיבת הכותרת המשופרת -->
+            <div class="hero-header-box">
+                <h1 style="margin: 0; color: white; font-size: 2.5rem;">אתגר המדינות הגדול</h1>
+                <p style="margin: 10px 0 0 0; color: #e2e8f0; font-size: 1.2rem;">בחר חידון, ענה על כמה שיותר שאלות ב-60 שניות, וצבור נקודות!</p>
+            </div>
+
+            <div style="display: flex; gap: 30px; justify-content: center;">
+                <div class="quiz-card" onclick="initQuiz('capitals')">
+                    <i class="fas fa-city" style="font-size: 3rem; color: #3b82f6; margin-bottom: 15px;"></i>
+                    <h3>חידון ערי בירה</h3>
+                    <p>האם תצליח לזהות את ערי הבירה של מדינות העולם?</p>
+                    <button class="btn" style="width: 100%; margin-top: 15px;">התחל חידון</button>
+                </div>
+
+                <div class="quiz-card" onclick="initQuiz('flags')">
+                    <i class="fas fa-flag" style="font-size: 3rem; color: #ef4444; margin-bottom: 15px;"></i>
+                    <h3>אתגר הדגלים</h3>
+                    <p>בחן את הידע שלך בזיהוי דגלים מכל רחבי הגלובוס.</p>
+                    <button class="btn" style="width: 100%; margin-top: 15px;">התחל חידון</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- מסך 2: החידון הפעיל -->
+        <div id="activeQuizScreen" style="display: none; background: rgba(15, 23, 42, 0.9); border: 1px solid var(--glass-border); border-radius: 20px; padding: 30px; box-shadow: var(--glass-shadow);">
+
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 20px;">
+                <h2 id="quizTitle" style="margin: 0; color: white;"></h2>
+                <div class="timer-box">
+                    <i class="fas fa-stopwatch"></i> <span id="timeRemaining">60</span> שניות
+                </div>
+            </div>
+
+            <div id="questionContainer" style="text-align: center; min-height: 250px;">
+                <!-- השאלה והתמונה יוזרקו לכאן -->
+            </div>
+
+            <div id="optionsContainer" class="quiz-options-grid">
+                <!-- 4 כפתורי התשובות יוזרקו לכאן -->
+            </div>
+        </div>
+
+        <!-- מסך 3: תוצאות -->
+        <div id="quizResultScreen" style="display: none; text-align: center; background: rgba(15, 23, 42, 0.9); border: 1px solid var(--glass-border); border-radius: 20px; padding: 40px; box-shadow: var(--glass-shadow);">
+            <i class="fas fa-trophy" style="font-size: 4rem; color: #f59e0b; margin-bottom: 20px;"></i>
+            <h2 style="font-size: 2.5rem; margin-top: 0;">הזמן עבר!</h2>
+            <p style="font-size: 1.5rem;">ענית נכון על <span id="finalScore" style="color: #3b82f6; font-weight: bold; font-size: 2rem;">0</span> שאלות.</p>
+            <p id="pointsMessage" style="color: #2ecc71; font-weight: bold; font-size: 1.2rem;"></p>
+
+            <button class="btn" onclick="backToQuizSelection()" style="margin-top: 30px; padding: 12px 30px; font-size: 1.2rem;">חזור לתפריט החידונים</button>
+        </div>
+
+    </main>
+
+    <script src="../JS/AjaxCall.js"></script>
+</body>
+</html>

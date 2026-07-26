@@ -1,0 +1,214 @@
+﻿
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorldExplorer - חוקרים את העולם</title>
+    <!-- ספריות לתצוגת כדור ארץ תלת-ממדי -->
+    <script src="https://unpkg.com/three"></script>
+    <script src="https://unpkg.com/globe.gl"></script>
+    <link rel="stylesheet" href="CSS/StyleSheet.css">
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+</head>
+<body class="home-page-bg">
+    <!-- כדור ארץ תלת-ממדי כרקע הכללי של האתר -->
+    <div id="globeBackground"></div>
+    <!-- מסך טעינה - Preloader -->
+    <div id="preloader">
+        <div class="loader-content">
+            <!-- לוגו של גינס עם רקע שקוף -->
+            <p>מוזג את הנתונים... 🍻</p>
+        </div>
+    </div>
+    <header>
+        <div class="logo">
+            <i class="fas fa-globe-americas"></i> WorldExplorer
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html" class="active">דף הבית</a></li>
+                <li><a href="Pages/my-lists.html">מפת הנסיעות שלי</a></li>
+                <li><a href="Pages/quizzes.html">חידונים</a></li>
+
+                <!-- הקישור למנהל, מוסתר כברירת מחדל -->
+                <li id="adminLinkLi" style="display: none;">
+                    <a href="Pages/admin.html" style="color: #f59e0b; font-weight: bold;"><i class="fas fa-crown"></i> פאנל מנהל</a>
+                </li>
+
+                <li id="userGreetingLi" style="display: none;"><span id="userGreeting" style="font-weight: bold; color: #fff; margin: 0 15px;"></span></li>
+                <li id="logoutLi" style="display: none;"><a href="#" id="btnLogout">התנתקות</a></li>
+                <li id="loginLi"><a href="Pages/login.html">התחברות</a></li>
+                <li id="registerLi"><a href="Pages/register.html" class="btn">הרשמה</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>גלו את העולם מחדש</h1>
+        <p>מידע, נתונים ומפות על כל מדינות העולם במקום אחד</p>
+
+        <div style="margin-top: 30px;">
+            <button class="btn" id="loadCountriesBtn"><i class="fas fa-search"></i> טען מדינות מהשרת</button>
+        </div>
+    </section>
+    <!-- אזור חיפוש וסינון מתוקן (מותאם ל-4 אלמנטים בשורה) -->
+    <div class="filters-container fade-in-up" style="max-width: 1100px; margin: 0 auto 40px auto; display: flex; gap: 15px; justify-content: center; align-items: center; flex-wrap: wrap; background: rgba(15, 23, 42, 0.7); padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+
+        <!-- חיפוש חופשי -->
+        <div style="position: relative;">
+            <input type="text" id="searchInput" class="form-control" placeholder="חיפוש: שם, שפה, מטבע..." style="width: 250px; padding-right: 35px;">
+            <i class="fas fa-search" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+        </div>
+
+        <!-- סינון לפי אזור -->
+        <select id="regionFilter" class="form-control" style="width: 180px;">
+            <option value="">🌍 כל האזורים</option>
+            <option value="Europe">אירופה</option>
+            <option value="Asia">אסיה</option>
+            <option value="Americas">אמריקה</option>
+            <option value="Africa">אפריקה</option>
+            <option value="Oceania">אוקיאניה</option>
+        </select>
+
+        <!-- סינון לפי מטבע -->
+        <select id="currencyFilter" class="form-control" style="width: 180px;">
+            <option value="">💱 כל המטבעות</option>
+        </select>
+
+        <!-- בחירת מיון -->
+        <select id="sortBy" class="form-control" style="width: 180px;">
+            <option value="">↕️ ללא מיון</option>
+            <option value="name_asc">שם (א-ת)</option>
+            <option value="name_desc">שם (ת-א)</option>
+            <option value="pop_desc">אוכלוסייה (גדול לקטן)</option>
+            <option value="pop_asc">אוכלוסייה (קטן לגדול)</option>
+            <option value="area_desc">שטח (גדול לקטן)</option>
+        </select>
+    </div>
+
+    <main class="container">
+        <div class="countries-grid" id="countriesContainer">
+
+            <div class="country-card fade-in-up">
+                <div class="card-img-placeholder" style="background-image: url('https://flagcdn.com/w320/il.png');"></div>
+
+                <div class="card-content">
+                    <h3 class="card-title">ישראל</h3>
+
+                    <div class="card-info">
+                        <span><i class="fas fa-map-marker-alt"></i> אזור:</span>
+                        <span>המזרח התיכון</span>
+                    </div>
+
+                    <div class="card-info">
+                        <span><i class="fas fa-city"></i> עיר בירה:</span>
+                        <span>ירושלים</span>
+                    </div>
+
+                    <div class="card-info">
+                        <span><i class="fas fa-users"></i> אוכלוסייה:</span>
+                        <span>9,364,000</span>
+                    </div>
+                </div>
+
+                <div class="card-actions">
+                    <button class="btn" style="padding: 8px 15px; font-size: 0.9rem;">פרטים נוספים</button>
+                    <button class="btn" onclick="openSharesModal('${country.id}', '${country.name}')" style="padding: 8px 15px; font-size: 0.9rem;">קהילה ושיתופים</button>
+                    <button class="btn" title="הוסף לרשימת משאלות" style="padding: 8px 15px; font-size: 0.9rem; background: transparent; border-color: white;">
+                        <i class="far fa-heart"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+
+    <!-- ======================================= -->
+    <!-- אזור הרשימות שלי (מודלים ומסך ניהול) -->
+    <!-- ======================================= -->
+    <!-- כפתור צף לפתיחת/סגירת מסך הרשימות -->
+    <button id="toggleListsBtn" onclick="toggleMyLists()" style="position: fixed; bottom: 30px; left: 30px; background: #8b5cf6; color: white; padding: 15px 20px; border-radius: 50px; border: none; font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; z-index: 999; transition: 0.3s;">
+        <i class="fas fa-list"></i> הרשימות שלי
+    </button>
+
+    <!-- מודל קופץ: לאיזו רשימה להוסיף? -->
+    <div id="saveModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#1e293b; padding:25px; border-radius:12px; z-index:1000; box-shadow: 0 0 20px rgba(0,0,0,0.8); color: white; text-align: center; border: 1px solid #334155; min-width: 300px;">
+        <h3 style="margin-top: 0; color: white;">בחר רשימה לשמירה</h3>
+        <select id="listSelector" class="form-control" style="margin: 15px 0; width: 100%; text-align: center;">
+            <option value="מועדפים ❤️">מועדפים ❤️</option>
+            <option value="יעדים לטיסה ✈️">יעדים לטיסה ✈️</option>
+            <option value="הייתי שם 🌍">הייתי שם 🌍</option>
+        </select>
+        <div style="display: flex; justify-content: space-between;">
+            <button onclick="confirmSaveToList()" class="form-control" style="width: 48%; background: #22c55e; color: white; border: none; cursor: pointer;">שמור</button>
+            <button onclick="closeSaveModal()" class="form-control" style="width: 48%; background: #ef4444; color: white; border: none; cursor: pointer;">ביטול</button>
+        </div>
+    </div>
+
+    <!-- מודל פרטי מדינה מורחבים -->
+    <div id="detailsModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 650px; padding: 40px;">
+            <span class="close-btn" onclick="closeDetailsModal()">&times;</span>
+            <div id="detailsModalBody">
+                <!-- תוכן פרטי המדינה יוזרק לכאן דינמית -->
+            </div>
+        </div>
+    </div>
+
+    <!-- מודל קופץ: העברה בין רשימות -->
+    <div id="moveModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#1e293b; padding:25px; border-radius:12px; z-index:1000; box-shadow: 0 0 20px rgba(0,0,0,0.8); color: white; text-align: center; border: 1px solid #334155; min-width: 300px;">
+        <h3 style="margin-top: 0; color: white;">העבר לרשימה אחרת</h3>
+        <select id="moveSelector" class="form-control" style="margin: 15px 0; width: 100%; text-align: center;"></select>
+        <div style="display: flex; justify-content: space-between;">
+            <button onclick="confirmMove()" class="form-control" style="width: 48%; background: #3b82f6; color: white; border: none; cursor: pointer;">העבר</button>
+            <button onclick="closeMoveModal()" class="form-control" style="width: 48%; background: #64748b; color: white; border: none; cursor: pointer;">ביטול</button>
+        </div>
+    </div>
+
+    <!-- מסך הרשימות (מוסתר כברירת מחדל, מחליף את החיפוש כשנפתח) -->
+    <div id="myListsScreen" class="fade-in-up" style="display:none; padding: 30px; background: rgba(15, 23, 42, 0.95); min-height: 80vh; border-radius: 12px; margin: 20px auto; max-width: 1100px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #334155; padding-bottom: 15px; margin-bottom: 30px;">
+            <h2 style="color: white; margin: 0;">המדינות השמורות שלי</h2>
+            <button onclick="toggleMyLists()" class="form-control" style="width: auto; background: transparent; color: #cbd5e1; border: 1px solid #cbd5e1; cursor: pointer;">
+                חזור לחיפוש <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+        <div id="listsContainer" style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+            <!-- הרשימות יוזרקו לכאן דינמית -->
+        </div>
+    </div>
+    <!-- ======================================= -->
+    <!-- מודל קהילה ושיתופים -->
+    <!-- ======================================= -->
+    <div id="countrySharesModal" class="modal-overlay" style="display:none;">
+        <div class="modal-content-glass">
+            <span class="close-modal" onclick="closeSharesModal()">&times;</span>
+            <h2 id="modalCountryTitle" style="color: white; border-bottom: 2px solid #3b82f6; padding-bottom: 10px; margin-top: 0;"></h2>
+
+            <div class="shares-container">
+                <div id="sharesList">
+                    <!-- הביקורות יוזרקו לכאן -->
+                </div>
+            </div>
+
+            <div id="addShareSection" class="add-share-box">
+                <h4 style="color: #3b82f6; margin-top: 0;"><i class="fas fa-pen"></i> שתף את החוויה שלך</h4>
+                <textarea id="shareContent" class="form-control" rows="3" placeholder="מה המחשבה, ההמלצה או הביקורת שלך על המדינה?"></textarea>
+                <button class="btn" onclick="postShare()" style="width: 100%; margin-top: 10px;">פרסם שיתוף <i class="fas fa-paper-plane"></i></button>
+            </div>
+
+            <div id="loginToShareMsg" style="text-align: center; color: #94a3b8; display: none; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 8px;">
+                כדי לשתף חוויות ולקרוא ביקורות, יש <a href="pages/login.html" style="color: #3b82f6; font-weight: bold;">להתחבר למערכת</a>.
+            </div>
+        </div>
+    </div>
+
+    <script src="JS/AjaxCall.js?v=1"></script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>הרשמה - WorldExplorer</title>
+
+    <link rel="stylesheet" href="../css/StyleSheet.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="../JS/AjaxCall.js"></script>
+</head>
+<body class="auth-page-bg">
+    <!-- מסך טעינה - Preloader -->
+    <div id="preloader">
+        <div class="loader-content">
+            <!-- לוגו של גינס עם רקע שקוף -->
+            <p>מוזג את הנתונים... 🍻</p>
+        </div>
+    </div>
+    <header>
+        <div class="logo">
+            <i class="fas fa-globe-americas"></i> WorldExplorer
+        </div>
+        <nav>
+            <ul>
+                <li><a href="../index.html">חזרה לדף הבית</a></li>
+                <li><a href="login.html" class="btn">להתחברות</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="auth-wrapper">
+        <div class="auth-box fade-in-up">
+            <h2 style="font-size: 2rem; margin-bottom: 30px;"><i class="fas fa-user-plus"></i> צור משתמש חדש</h2>
+
+            <form id="registerForm">
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="firstName">שם פרטי</label>
+                        <input type="text" id="firstName" class="form-control" placeholder="הזן שם פרטי" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lastName">שם משפחה</label>
+                        <input type="text" id="lastName" class="form-control" placeholder="הזן שם משפחה" required>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="email">דוא"ל</label>
+                        <input type="email" id="email" class="form-control" placeholder="your@email.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">סיסמה</label>
+                        <input type="password" id="password" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">אימות סיסמה</label>
+                        <input type="password" id="confirmPassword" class="form-control" required>
+                    </div>
+
+                    <div class="form-group full-width" style="margin-top: 15px; border-top: 1px solid var(--glass-border); padding-top: 15px;">
+                        <h4 style="margin-bottom: 15px; color: var(--accent-glow);"><i class="fas fa-star"></i> העדפות טיול ושפות</h4>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="favContinent">יבשת מועדפת</label>
+                        <select id="favContinent" class="form-control">
+                            <option value="">בחר יבשת...</option>
+                            <option value="europe">אירופה</option>
+                            <option value="asia">אסיה</option>
+                            <option value="americas">אמריקה</option>
+                            <option value="africa">אפריקה</option>
+                            <option value="oceania">אוקיאניה</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="languageProficiency">שפה זרה ורמת שליטה</label>
+                        <input type="text" id="languageProficiency" class="form-control" placeholder="לדוגמה: ספרדית - רמת שפת אם">
+                    </div>
+
+                </div>
+
+                <button type="button" id="btnRegister" class="btn" style="width: 100%; margin-top: 25px; font-size: 1.2rem;">הרשמה למערכת</button>
+            </form>
+
+            <p style="margin-top: 25px; color: var(--text-muted);">
+                כבר יש לך חשבון? <a href="login.html" class="auth-link">התחבר כאן</a>
+            </p>
+        </div>
+    </main>
+
+</body>
+</html>
