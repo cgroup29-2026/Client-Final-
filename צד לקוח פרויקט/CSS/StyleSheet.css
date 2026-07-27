@@ -1,6 +1,6 @@
 ﻿/* =========================================
    WorldExplorer - Elegant Earth Theme
-   עיצוב פרימיום עם אפקט פרלקס וזכוכית חלבית
+   Responsive Premium UI by AI
    ========================================= */
 
 @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;800&display=swap');
@@ -16,21 +16,28 @@
     --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
-html {
-    scroll-behavior: smooth;
-    direction: rtl; /* תמיכה בעברית */
+/* =========================================
+   איפוס גלובלי ומניעת בריחות טקסט (Responsive Reset)
+   ========================================= */
+* {
+    box-sizing: border-box;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
-/* =========================================
-   רקע האתר - אפקט Parallax אינטראקטיבי
-   ========================================= */
+html {
+    scroll-behavior: smooth;
+    direction: rtl;
+    overflow-x: hidden;
+}
+
 body {
     margin: 0;
     font-family: 'Heebo', sans-serif;
     color: var(--text-main);
     background-color: var(--deep-space);
-    /* תמונת כדור הארץ ברזולוציה גבוהה */
-   
+    overflow-x: hidden;
+    max-width: 100vw;
 }
 
 /* =========================================
@@ -44,10 +51,9 @@ header {
     justify-content: space-between;
     align-items: center;
     padding: 15px 5%;
-    /* אפקט הזכוכית (Glassmorphism) */
-    background: rgba(7, 11, 25, 0.7);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: rgba(7, 11, 25, 0.85);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
     border-bottom: 1px solid var(--glass-border);
 }
 
@@ -58,6 +64,7 @@ header {
     background: linear-gradient(to right, #ffffff, var(--accent-glow));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    z-index: 1001;
 }
 
 nav ul {
@@ -66,6 +73,7 @@ nav ul {
     gap: 25px;
     margin: 0;
     padding: 0;
+    align-items: center;
 }
 
 nav a {
@@ -78,7 +86,6 @@ nav a {
     transition: color 0.3s ease;
 }
 
-    /* קו מואר שמופיע מתחת לקישור במעבר עכבר */
     nav a::after {
         content: '';
         position: absolute;
@@ -105,19 +112,19 @@ nav a {
 }
 
     .hero h1 {
-        font-size: 4rem;
+        font-size: clamp(2.5rem, 5vw, 4rem); /* טקסט מתאים למסך */
         margin-bottom: 15px;
         text-shadow: 2px 2px 20px rgba(0,0,0,0.8);
     }
 
     .hero p {
-        font-size: 1.5rem;
+        font-size: clamp(1rem, 3vw, 1.5rem);
         color: var(--text-muted);
         text-shadow: 1px 1px 10px rgba(0,0,0,0.8);
     }
 
 /* =========================================
-   כפתורים יוקרתיים מוארים
+   כפתורים יוקרתיים
    ========================================= */
 .btn {
     background: rgba(52, 152, 219, 0.2);
@@ -131,6 +138,8 @@ nav a {
     font-weight: 600;
     transition: all 0.3s ease;
     backdrop-filter: blur(5px);
+    display: inline-block;
+    text-align: center;
 }
 
     .btn:hover {
@@ -155,7 +164,6 @@ nav a {
     padding-bottom: 80px;
 }
 
-/* כרטיסיית מדינה בעיצוב זכוכית מרחפת */
 .country-card {
     background: var(--glass-bg);
     backdrop-filter: blur(16px);
@@ -183,7 +191,6 @@ nav a {
     position: relative;
 }
 
-    /* הילה כהה על התמונה כדי להבליט את המעבר לכרטיסייה */
     .card-img-placeholder::after {
         content: '';
         position: absolute;
@@ -222,10 +229,12 @@ nav a {
     justify-content: space-between;
     background: rgba(0,0,0,0.2);
     border-top: 1px solid var(--glass-border);
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 /* =========================================
-   אנימציית כניסה בגלילה (יופעל דרך JS בהמשך)
+   אנימציות כלליות
    ========================================= */
 .fade-in-up {
     animation: fadeInUp 0.8s ease forwards;
@@ -254,7 +263,6 @@ nav a {
 .auth-box {
     background: var(--glass-bg);
     backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
     border: 1px solid var(--glass-border);
     border-radius: 20px;
     padding: 40px;
@@ -264,7 +272,6 @@ nav a {
     text-align: center;
 }
 
-    /* הקטנת הרוחב הספציפי לדף ההתחברות */
     .auth-box.login-box {
         max-width: 450px;
     }
@@ -323,526 +330,16 @@ select.form-control option {
     font-weight: bold;
 }
 
-    .auth-link:hover {
-        text-decoration: underline;
-    }
-
-/* התאמה למסכים קטנים (רספונסיביות) */
-@media (max-width: 600px) {
-    .form-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
 /* =========================================
-   עיצוב דף הרשימות והמפה (my-lists.html)
-   ========================================= */
-.lists-layout {
-    display: flex;
-    gap: 30px;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 20px;
-    min-height: 70vh;
-}
-
-.map-wrapper {
-    flex: 2;
-    background: rgba(15, 23, 42, 0.95) !important; /* אטום כדי להבליט את המפה */
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    padding: 20px;
-    box-shadow: var(--glass-shadow);
-    position: relative;
-}
-
-#world-map {
-    width: 100%;
-    height: 600px;
-}
-
-.checklists-wrapper {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.checklist-box {
-    background: rgba(15, 23, 42, 0.8);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 15px;
-    padding: 15px;
-    margin-bottom: 20px;
-    box-shadow: var(--glass-shadow);
-}
-
-    .checklist-box h3 {
-        margin-top: 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        padding-bottom: 10px;
-        color: white;
-        font-size: 1.1rem;
-        position: sticky;
-        top: 0;
-        background: rgba(15, 23, 42, 0.95);
-        z-index: 10;
-    }
-
-/* עיצוב רשימות המדינות עם גלילה (Scrollbar) חכמה */
-.list-items-container {
-    max-height: 180px;
-    overflow-y: auto;
-    padding-right: 5px;
-}
-
-    .list-items-container::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    .list-items-container::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 10px;
-    }
-
-    .list-items-container::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 10px;
-    }
-
-        .list-items-container::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.4);
-        }
-
-.check-item {
-    display: block;
-    margin-bottom: 12px;
-    cursor: pointer;
-    color: var(--text-main);
-    transition: color 0.2s;
-}
-
-    .check-item:hover {
-        color: white;
-    }
-
-    .check-item input {
-        margin-left: 10px;
-        transform: scale(1.2);
-        cursor: pointer;
-    }
-
-@media (max-width: 900px) {
-    .lists-layout {
-        flex-direction: column;
-    }
-
-    #world-map {
-        height: 400px;
-    }
-}
-
-/* =========================================
-   עיצוב קופסאות הרשימות הקופצות (בדף הבית)
-   ========================================= */
-.popup-list-box {
-    background: rgba(30, 41, 59, 0.8);
-    border: 1px solid #475569;
-    padding: 20px;
-    border-radius: 12px;
-    width: 320px;
-    height: 350px; /* הגדרת גובה קבוע לקופסה */
-    display: flex;
-    flex-direction: column;
-}
-
-    .popup-list-box h3 {
-        color: white;
-        text-align: center;
-        border-bottom: 2px solid #3b82f6;
-        padding-bottom: 10px;
-        margin-top: 0;
-        flex-shrink: 0; /* מונע מהכותרת להתכווץ */
-    }
-
-/* אזור הגלילה של המדינות בתוך הקופסה */
-.popup-list-items {
-    list-style: none;
-    padding: 0;
-    margin: 15px 0 0 0;
-    overflow-y: auto; /* מוסיף את הגלגלת! */
-    flex-grow: 1; /* לוקח את כל המקום הפנוי בקופסה */
-    padding-right: 5px;
-}
-
-    /* עיצוב הגלגלת */
-    .popup-list-items::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    .popup-list-items::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 10px;
-    }
-
-    .popup-list-items::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 10px;
-    }
-
-        .popup-list-items::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.4);
-        }
-
-/* עיצוב השורה של כל מדינה ברשימה */
-.popup-list-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    padding: 10px;
-    background: rgba(15, 23, 42, 0.6);
-    border-radius: 8px;
-    color: white;
-}
-
-/* =========================================
-   עיצוב מודל קהילה ושיתופים
-   ========================================= */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    z-index: 2000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-content-glass {
-    background: rgba(15, 23, 42, 0.95);
-    border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    width: 90%;
-    max-width: 650px;
-    height: 80vh;
-    padding: 30px;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.6);
-}
-
-.close-modal {
-    position: absolute;
-    top: 15px;
-    left: 20px;
-    font-size: 28px;
-    color: #94a3b8;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-    .close-modal:hover {
-        color: white;
-    }
-
-.shares-container {
-    flex-grow: 1;
-    overflow-y: auto;
-    margin-bottom: 20px;
-    padding-right: 10px;
-}
-
-    .shares-container::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    .shares-container::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 10px;
-    }
-
-    .shares-container::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 10px;
-    }
-
-.share-card {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
-    padding: 15px;
-    margin-bottom: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.share-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    font-size: 0.9rem;
-    color: #cbd5e1;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    padding-bottom: 5px;
-}
-
-.share-content {
-    color: white;
-    line-height: 1.5;
-}
-
-.share-actions {
-    margin-top: 10px;
-    text-align: left;
-}
-
-    .share-actions button {
-        background: none;
-        border: none;
-        cursor: pointer;
-        font-size: 1rem;
-        margin-left: 15px;
-        transition: 0.2s;
-    }
-
-.btn-edit {
-    color: #3b82f6;
-}
-
-    .btn-edit:hover {
-        color: #60a5fa;
-    }
-
-.btn-delete {
-    color: #ef4444;
-}
-
-    .btn-delete:hover {
-        color: #f87171;
-    }
-
-.add-share-box {
-    background: rgba(0, 0, 0, 0.2);
-    padding: 15px;
-    border-radius: 12px;
-    border: 1px solid var(--glass-border);
-}
-/* חסימת המתיחה של תיבת הטקסט במודל השיתופים */
-#shareContent {
-    resize: none;
-    font-family: inherit;
-    box-sizing: border-box;
-}
-
-/* =========================================
-   עיצוב מערכת החידונים (quizzes.html)
-   ========================================= */
-.quiz-card {
-    background: rgba(15, 23, 42, 0.8);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 15px;
-    padding: 30px;
-    width: 45%;
-    text-align: center;
-    cursor: pointer;
-    transition: transform 0.3s, box-shadow 0.3s;
-}
-
-    .quiz-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
-        border-color: rgba(59, 130, 246, 0.5);
-    }
-
-.timer-box {
-    background: #ef4444;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 30px;
-    font-weight: bold;
-    font-size: 1.2rem;
-    box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
-}
-
-.quiz-options-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    margin-top: 20px;
-}
-
-.quiz-option-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255,255,255,0.2);
-    color: white;
-    padding: 15px;
-    border-radius: 10px;
-    font-size: 1.1rem;
-    font-family: inherit;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-    .quiz-option-btn:hover {
-        background: rgba(59, 130, 246, 0.4);
-        border-color: #3b82f6;
-    }
-
-    .quiz-option-btn.correct {
-        background: #22c55e !important;
-        border-color: #16a34a !important;
-    }
-
-    .quiz-option-btn.wrong {
-        background: #ef4444 !important;
-        border-color: #dc2626 !important;
-    }
-
-/* תמונה רספונסיבית לחידון הדגלים */
-.quiz-flag-img {
-    max-width: 250px;
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 8px;
-    margin: 15px 0;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-}
-
-/* עיצוב כותרת דף החידונים */
-.hero-header-box {
-    background: rgba(15, 23, 42, 0.7);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    padding: 30px;
-    margin-bottom: 40px;
-    text-align: center;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-}
-
-    .hero-header-box h1, .hero-header-box p {
-        text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-    }
-
-/* =========================================
-   עיצוב פאנל מנהל
-   ========================================= */
-.stat-card {
-    background: rgba(15, 23, 42, 0.8);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 15px;
-    padding: 20px;
-    text-align: center;
-    color: white;
-}
-
-    .stat-card i {
-        font-size: 2.5rem;
-        margin-bottom: 10px;
-    }
-
-    .stat-card h3 {
-        font-size: 2rem;
-        margin: 0;
-        color: white;
-    }
-
-    .stat-card p {
-        color: #94a3b8;
-        margin: 5px 0 0 0;
-    }
-
-.admin-table-container {
-    background: rgba(15, 23, 42, 0.9);
-    padding: 20px;
-    border-radius: 15px;
-    border: 1px solid rgba(255,255,255,0.1);
-}
-
-.admin-table {
-    width: 100%;
-    border-collapse: collapse;
-    color: white;
-    margin-top: 15px;
-    text-align: right;
-}
-
-    .admin-table th, .admin-table td {
-        padding: 12px;
-        border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .admin-table th {
-        background: rgba(59, 130, 246, 0.2);
-    }
-
-.btn-lock {
-    background: #ef4444;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.btn-unlock {
-    background: #2ecc71;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.btn-promote {
-    background: #3b82f6;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-    .btn-promote:hover {
-        background: #2563eb;
-    }
-
-.btn-demote {
-    background: #f59e0b;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-    .btn-demote:hover {
-        background: #d97706;
-    }
-
-/* =========================================
-   מבנה דף המפה (my-lists.html)
+   מפת מדינות ורשימות (my-lists.html)
    ========================================= */
 .map-page-wrapper {
     display: flex;
-    flex-direction: row; /* RTL: העמודה הראשונה תהיה מימין */
+    flex-direction: row;
     gap: 30px;
     align-items: flex-start;
 }
 
-/* עמודת הצד (רשימות) */
 .lists-sidebar {
     width: 320px;
     flex-shrink: 0;
@@ -863,29 +360,27 @@ select.form-control option {
 }
 
     .list-box h3 {
-        margin: -20px -20px 15px -20px; /* מותח את הכותרת לצדדים ולמעלה כדי לכסות את הריווח של הקופסה */
-        padding: 20px; /* מחזיר את הריווח לטקסט עצמו כדי שייראה טוב */
+        margin: -20px -20px 15px -20px;
+        padding: 20px;
         color: white;
         border-bottom: 1px solid rgba(255,255,255,0.1);
         position: sticky;
-        top: -20px; /* נדבק בדיוק לקצה העליון של הקופסה */
-        background: #0f172a; /* צבע כחול-כהה אטום לחלוטין! חוסם את הטקסט שעובר מתחת */
-        z-index: 10; /* מוודא שהכותרת תמיד תהיה מעל המדינות */
+        top: -20px;
+        background: #0f172a;
+        z-index: 10;
     }
 
-/* העמודה המרכזית (המפה) */
 .map-main-area {
     flex-grow: 1;
-    /* רקע כהה כמעט אטום כדי להפריד מהתמונה שמאחור! */
     background: rgba(15, 23, 42, 0.95);
     backdrop-filter: blur(15px);
     border: 1px solid rgba(255,255,255,0.15);
     border-radius: 20px;
     padding: 30px;
     box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    width: 100%;
 }
 
-/* מקרא המפה */
 .map-legend {
     display: flex;
     justify-content: center;
@@ -903,8 +398,6 @@ select.form-control option {
     align-items: center;
     gap: 8px;
     color: #e2e8f0;
-    font-size: 1rem;
-    font-weight: 500;
 }
 
 .color-box {
@@ -912,179 +405,257 @@ select.form-control option {
     height: 18px;
     border-radius: 4px;
     display: inline-block;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-}
-
-/* התאמה למסכים קטנים (רספונסיביות) */
-@media (max-width: 1024px) {
-    .map-page-wrapper {
-        flex-direction: column; /* במסך קטן, הרשימות יקפצו מתחת למפה */
-    }
-
-    .lists-sidebar {
-        width: 100%;
-    }
 }
 
 /* =========================================
-   עיצוב חלונית פרטי מדינה
+   מודל פרטים קופץ (Modals)
    ========================================= */
+.modal-overlay, .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content, .modal-content-glass {
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    width: 90%;
+    max-width: 650px;
+    max-height: 90vh;
+    padding: 30px;
+    position: relative;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+    overflow-y: auto;
+}
+
+.close-modal, .close-btn, .close {
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    font-size: 28px;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: 0.3s;
+    z-index: 50;
+}
+
+    .close-modal:hover, .close-btn:hover, .close:hover {
+        color: #ef4444;
+        transform: scale(1.2);
+    }
+
 .details-grid-modal {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* שתי עמודות */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
     background: rgba(15, 23, 42, 0.6);
     padding: 25px;
     border-radius: 15px;
-    border: 1px solid rgba(255,255,255,0.1);
+    margin-top: 20px;
 }
 
 .detail-item {
     color: #cbd5e1;
-    font-size: 1.1rem;
     display: flex;
     align-items: center;
     gap: 12px;
     background: rgba(255,255,255,0.03);
     padding: 10px 15px;
     border-radius: 8px;
-    border: 1px solid rgba(255,255,255,0.05);
+    word-break: break-word;
 }
 
-    .detail-item i {
-        font-size: 1.3rem;
-        width: 25px;
-        text-align: center;
-    }
-
-    .detail-item strong {
-        color: white;
-    }
-
-/* התאמה למסכים קטנים (פלאפונים) */
-@media (max-width: 600px) {
-    .details-grid-modal {
-        grid-template-columns: 1fr; /* עמודה אחת במסך קטן */
-    }
+/* קהילה ושיתופים */
+.shares-container {
+    flex-grow: 1;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    padding-right: 10px;
 }
 
-/* עיצוב כפתור הסגירה של המודלים (האיקס) */
-.close-btn {
-    color: #94a3b8;
-    float: left; /* או right, תלוי בכיוון ה-RTL שלך, אבל בדרך כלל ב-RTL נשים משמאל */
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer; /* <--- זה מה שמתקן את הבעיה! הופך את העכבר ליד */
-    transition: color 0.2s ease-in-out, transform 0.2s;
+.share-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-    .close-btn:hover,
-    .close-btn:focus {
-        color: #ef4444; /* צבע אדום במעבר עכבר */
-        text-decoration: none;
-        transform: scale(1.2); /* גודל טיפה יותר כדי להרגיש אינטראקטיבי */
+/* =========================================
+   חידונים (quizzes.html)
+   ========================================= */
+.quiz-card {
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 15px;
+    padding: 30px;
+    width: 45%;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+    .quiz-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
     }
 
-/* עיצוב התוכן החוזר מהבינה המלאכותית */
-#aiResultBox h3 {
-    color: #a78bfa;
-    border-bottom: 1px dashed rgba(167, 139, 250, 0.3);
-    padding-bottom: 5px;
+.quiz-options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
     margin-top: 20px;
 }
 
-#aiResultBox ul {
-    padding-right: 20px;
+.quiz-option-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: 0.2s;
 }
 
-#aiResultBox li {
-    margin-bottom: 8px;
-    line-height: 1.5;
+    .quiz-option-btn:hover {
+        background: rgba(59, 130, 246, 0.4);
+    }
+
+    .quiz-option-btn.correct {
+        background: #22c55e !important;
+    }
+
+    .quiz-option-btn.wrong {
+        background: #ef4444 !important;
+    }
+
+/* =========================================
+   פאנל ניהול (admin.html)
+   ========================================= */
+.stat-card {
+    background: rgba(15, 23, 42, 0.8) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    color: white;
+    transition: transform 0.3s;
+}
+
+    .stat-card:hover {
+        transform: translateY(-10px);
+    }
+
+.admin-table-container {
+    background: rgba(15, 23, 42, 0.9) !important;
+    padding: 20px;
+    border-radius: 15px;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    overflow-x: auto;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: white;
+    text-align: right;
+    min-width: 600px;
+}
+
+    .admin-table th, .admin-table td {
+        padding: 12px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+/* כפתורי פעולה ניהול */
+.btn-lock, .btn-unlock, .btn-promote, .btn-demote {
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-lock {
+    background: #ef4444;
+    color: white;
+}
+
+.btn-unlock {
+    background: #2ecc71;
+    color: white;
+}
+
+.btn-promote {
+    background: #3b82f6;
+    color: white;
+}
+
+.btn-demote {
+    background: #f59e0b;
+    color: white;
 }
 
 /* =========================================
-   תיקון גלישה למודל פרטי מדינה וה-AI
+   רקעים והגדרות בסיס לפי עמודים
    ========================================= */
-#detailsModal .modal-content {
-    max-height: 90vh; /* מונע מהחלון לברוח מגבולות המסך */
-    overflow-y: auto; /* מוסיף פס גלילה פנימי כשהתוכן מתארך */
-    scrollbar-width: thin; /* עידון פס הגלילה בפיירפוקס */
-    scrollbar-color: #8b5cf6 rgba(15, 23, 42, 0.8);
+#globeBackground {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -999;
 }
 
-    /* עיצוב פס הגלילה הפנימי לדפדפני כרום ואדג' */
-    #detailsModal .modal-content::-webkit-scrollbar {
-        width: 8px;
-    }
+body.home-page-bg {
+    background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+}
 
-    #detailsModal .modal-content::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 10px;
-    }
+body.map-page-bg {
+    background-color: #070b19;
+}
 
-    #detailsModal .modal-content::-webkit-scrollbar-thumb {
-        background: #8b5cf6;
-        border-radius: 10px;
-    }
+body.quiz-page-bg {
+    background-color: #0f172a;
+}
 
-        #detailsModal .modal-content::-webkit-scrollbar-thumb:hover {
-            background: #7c3aed;
-        }
+body.auth-page-bg {
+    background-color: #070b19;
+}
 
-/* =========================================
-   מסך טעינה עם לוגו (Preloader)
-   ========================================= */
+body.admin-page-bg {
+    background-color: #070b19;
+}
+
+/* פרילואדר */
 #preloader {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #0f172a; /* צבע הרקע התואם לאתר שלך */
-    z-index: 99999; /* מוודא שזה מסתיר הכל */
+    background-color: #0f172a;
+    z-index: 99999;
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: opacity 0.6s ease-out, visibility 0.6s ease-out;
 }
 
-.loader-content {
-    text-align: center;
-    color: #cbd5e1;
-    font-family: inherit;
-}
-
-/* אנימציית פעימה ללוגו של גינס */
-.guinness-pulse {
-    width: 180px; /* גודל הלוגו */
-    margin-bottom: 20px;
-    animation: pulse-guinness 1.5s infinite;
-    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.15));
-}
-
-@keyframes pulse-guinness {
-    0% {
-        transform: scale(0.95);
-        opacity: 0.8;
-    }
-
-    50% {
-        transform: scale(1.05);
-        opacity: 1;
-    }
-
-    100% {
-        transform: scale(0.95);
-        opacity: 0.8;
-    }
-}
-
-/* אנימציית הבהוב לטקסט */
 .loader-content p {
+    color: #cbd5e1;
     font-size: 1.3rem;
-    font-weight: 500;
-    letter-spacing: 1px;
-    margin: 0;
     animation: blink-text 1.5s infinite;
 }
 
@@ -1098,193 +669,164 @@ select.form-control option {
     }
 }
 
-/* =========================================
-   הגדרות כדור ארץ תלת-ממדי כרקע כללי
-   ========================================= */
-#globeBackground {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: -999; /* יושב תמיד מאחורי כל האלמנטים באתר */
-    overflow: hidden;
-    pointer-events: auto; /* מאפשר למשתמש לסובב את כדור הארץ עם העכבר גם ברקע! */
-}
+/* =========================================================================
+   תאימות למובייל ורספונסיביות מלאה (Media Queries + CSS Hamburger)
+   ========================================================================= */
 
-/* מוודא שכל שאר התוכן באתר יושב מעל הרקע ונשאר לחיץ לחלוטין */
-body {
-    background-color: #0f172a; /* גיבוי כהה לזמן הטעינה */
-    overflow-x: hidden;
-}
-
-header, main, .container, .modal, .lists-sidebar, .countries-grid {
-    position: relative;
-    z-index: 10; /* שומר שהם תמיד יהיו מעל כדור הארץ */
-}
-/* =========================================
-   רקע ייעודי לדף המפה (my-lists.html)
-   ========================================= */
-body.map-page-bg {
-    background-color: #070b19;
-    /* 
-       שכבה 1+2: הילות זוהרות ועדינות בפינות (כחול וסגול)
-       שכבה 3: כיסוי כהה ואטום כמעט לגמרי כדי שהמפה והרשימות יבלטו
-       שכבה 4: תמונת רקע של כדור הארץ מהחלל 
-    */
-    background-image: radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.12) 0%, transparent 40%), linear-gradient(rgba(7, 11, 25, 0.88), rgba(7, 11, 25, 0.88)), url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1920&auto=format&fit=crop');
-    background-size: 100%, 100%, 100%, cover;
-    background-position: center;
-    background-attachment: fixed;
-}
-/* =========================================
-   רקע ייעודי לדף החידונים (תמונת דגלים עובדת)
-   ========================================= */
-/* בדיקת מעבדה לדגלים */
-/* =========================================
-   רקע ייעודי לדף החידונים (נטו קוד, ללא תמונות)
-   ========================================= */
-/* =========================================
-   רקע ייעודי לדף החידונים (נוף טיולים)
-   ========================================= */
-body.quiz-page-bg {
-    background-color: #0f172a;
-    /* 
-       שכבה 1+2: הילות עדינות להעמקת המראה
-       שכבה 3: כיסוי כהה וקטיפתי
-       שכבה 4: תמונת נוף מרהיבה של שמיים ועננים (אווירת טיסה)
-    */
-    background-image: radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(239, 68, 68, 0.1) 0%, transparent 50%), linear-gradient(rgba(15, 23, 42, 0.5), rgba(15, 23, 42, 0.7)), url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1920&auto=format&fit=crop');
-    background-size: 100%, 100%, 100%, cover;
-    background-position: center;
-    background-attachment: fixed;
-}
-/* =========================================
-   רקע ייעודי לדפי ההתחברות וההרשמה
-   ========================================= */
-body.auth-page-bg {
-    background-color: #070b19;
-    /* נוף הרים יוקרתי בשקיעה עם הילות רכות */
-    background-image: linear-gradient(rgba(7, 11, 25, 0.7), rgba(7, 11, 25, 0.7)), url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1920&auto=format&fit=crop');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    /* מונע גלילה מיותרת */
-    overflow: hidden;
-}
-/* =========================================
-   פאנל מנהל - עיצוב Cyberpunk Dark Mode
-   ========================================= */
-body.admin-page-bg {
-    background: radial-gradient(circle at center, #1e293b 0%, #070b19 100%);
-    background-attachment: fixed;
-}
-
-.admin-table-container {
-    background: rgba(15, 23, 42, 0.4) !important;
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-    border-radius: 25px;
-    padding: 30px;
-}
-
-.admin-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0 10px; /* ריווח בין שורות */
-    color: white;
-}
-
-    .admin-table th {
-        background: transparent;
-        color: #94a3b8;
-        text-transform: uppercase;
-        font-size: 0.8rem;
-        letter-spacing: 1px;
+@media (max-width: 900px) {
+    /* ------ תפריט המבורגר (ללא שינוי HTML!) ------ */
+    header {
+        flex-wrap: wrap;
+        padding: 15px 20px;
     }
 
-    .admin-table tr {
-        background: rgba(30, 41, 59, 0.5);
-        transition: all 0.3s ease;
+    nav {
+        position: relative;
     }
 
-        .admin-table tr:hover {
-            background: rgba(59, 130, 246, 0.1);
-            transform: scale(1.01);
+        /* מזריק את צלמית ההמבורגר בעזרת CSS בלבד */
+        nav::before {
+            content: "\f0c9"; /* FontAwesome Hamburger Icon */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            font-size: 28px;
+            color: var(--text-main);
+            cursor: pointer;
+            display: block;
+            padding: 5px;
         }
 
-    .admin-table td {
-        padding: 20px;
+        /* מסתיר את רשימת הלינקים ומעצב אותה כחלון קופץ */
+        nav ul {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 20px;
+            min-width: 200px;
+            flex-direction: column;
+            gap: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            z-index: 9999;
+        }
+
+        /* פתיחת התפריט במעבר עכבר/לחיצה על המסך! פתרון מושלם ללא JS */
+        nav:hover ul,
+        nav:focus-within ul,
+        nav:active ul {
+            display: flex;
+            animation: slideDown 0.3s ease forwards;
+        }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
-/* כפתורי פעולה ניאוניים */
-.btn-lock, .btn-unlock, .btn-promote, .btn-demote {
-    padding: 8px 16px;
-    border-radius: 50px;
-    font-weight: bold;
-    border: none;
-    cursor: pointer;
-    transition: 0.3s;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-}
-
-    .btn-lock:hover {
-        box-shadow: 0 0 15px #ef4444;
+    nav ul li {
+        width: 100%;
+        text-align: right;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        padding-bottom: 10px;
     }
 
-    .btn-promote:hover {
-        box-shadow: 0 0 15px #3b82f6;
+        nav ul li:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+    /* דורס עיצוב Inline ספציפי של כפתורי התחברות בתפריט */
+    nav a.btn, nav li a[style*="border"] {
+        display: block !important;
+        text-align: center;
+        width: 100%;
     }
-.stat-card {
-    background: rgba(15, 23, 42, 0.6) !important;
-    border: 1px solid rgba(255, 255, 255, 0.05) !important;
-    transition: transform 0.3s;
+
+    /* ----------------------------------------------------- */
+
+    /* סידור עמוד המפה למובייל */
+    .map-page-wrapper {
+        flex-direction: column;
+    }
+
+    .lists-sidebar {
+        width: 100%;
+    }
+
+    /* פאנל פילטרים בעמוד הבית - דורס Inline Styles */
+    .filters-container input,
+    .filters-container select {
+        width: 100% !important;
+        margin-bottom: 10px;
+    }
+
+    /* חידונים - הפיכת כרטיסיות לטור אחד */
+    .quiz-card {
+        width: 100% !important;
+    }
+
+    div[style*="display: flex; gap: 30px; justify-content: center;"] {
+        flex-direction: column !important;
+    }
+
+    /* היכל התהילה - שתי עמודות לטור אחד */
+    div[style*="display: flex; gap: 20px; flex-wrap: wrap;"] {
+        flex-direction: column !important;
+    }
 }
 
-    .stat-card:hover {
-        transform: translateY(-15px);
-        box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
+@media (max-width: 600px) {
+    /* התאמת גריד לאלמנטים קטנים */
+    .countries-grid {
+        grid-template-columns: 1fr;
     }
-.admin-table th, .admin-table td {
-    padding: 20px;
-    text-align: right; /* יישור לימין לכל תוכן הטבלה */
-}
-/* =========================================
-   רקע לעמוד הבית - "שמיים זרועי כוכבים"
-   ========================================= */
-body.home-page-bg {
-    background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
-    background-attachment: fixed;
-    height: 100vh;
-    margin: 0;
-    overflow-x: hidden;
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .quiz-options-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* תיקון גובה המפה שמוגדר ידנית ב-HTML */
+    #world-map {
+        height: 350px !important;
+    }
+
+    /* טבלת האדמין - תיקון ה-Inline Styles לארבע עמודות כדי שיהפכו לטור או 2 */
+    div[style*="grid-template-columns: repeat(4, 1fr)"] {
+        grid-template-columns: 1fr 1fr !important;
+    }
+
+    .card-actions {
+        flex-direction: column;
+    }
+
+        .card-actions button {
+            width: 100%;
+        }
 }
 
-/* אפקט נצנוץ לכוכבים */
-.home-page-bg::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px), radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px);
-    background-size: 550px 550px, 350px 350px;
-    background-position: 0 0, 40px 60px;
-    opacity: 0.3;
-    pointer-events: none;
-}
-/* =========================================
-   רקע יוקרתי לעמוד האדמין - "מרכז בקרה"
-   ========================================= */
-/* =========================================
-   רקע אדמין - מראה טכנולוגי (Grid & Electric Blue)
-   ========================================= */
-body.admin-page-bg {
-    background-color: #070b19;
-    /* יצירת רשת עדינה שנראית כמו מפת קווי רשת */
-    background-image: linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px), radial-gradient(circle at top right, rgba(59, 130, 246, 0.2), transparent), radial-gradient(circle at bottom left, rgba(30, 41, 59, 0.5), transparent);
-    background-size: 50px 50px, 50px 50px, 100% 100%, 100% 100%;
-    background-attachment: fixed;
+@media (max-width: 480px) {
+    /* דריסת פאנל אדמין למסכים ממש קטנים */
+    div[style*="grid-template-columns: repeat(4, 1fr)"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* התאמת גודל טקסט בכותרת */
+    .hero h1 {
+        font-size: 2rem;
+    }
 }
