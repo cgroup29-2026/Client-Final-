@@ -1,14 +1,10 @@
-﻿// =========================================
-// משתנים גלובליים
-// =========================================
-const apiUrl = "https://localhost:7277/api/Countries";
+﻿const BASE_API_URL = "https://proj.ruppin.ac.il/cgroup29/test2/tar1/api/";
+const apiUrl = "https://localhost:7234/api/Countries";
 let allCountries = [];
 let alpha2ToCountry = {};
 let vectorMap;
 
-// =========================================
-// אזור הרשימות האישיות של המשתמש (LocalStorage דינמי)
-// =========================================
+
 let userLists = {
     "מועדפים ❤️": [],
     "יעדים לטיסה ✈️": [],
@@ -24,7 +20,6 @@ function getListStorageKey() {
     return "userLists_" + email;
 }
 
-// פונקציה לטעינת הרשימות של המשתמש הספציפי
 function loadUserLists() {
     let key = getListStorageKey();
     let savedLists = JSON.parse(localStorage.getItem(key));
@@ -35,15 +30,12 @@ function loadUserLists() {
     }
 }
 
-// פונקציה לשמירת הרשימות למשתמש הספציפי
 function saveUserLists() {
     let key = getListStorageKey();
     localStorage.setItem(key, JSON.stringify(userLists));
 }
 
-// =========================================
-// פונקציית עזר לקריאות שרת (AJAX)
-// =========================================
+
 function ajaxCall(method, api, data, successCB, errorCB) {
     $.ajax({
         type: method,
@@ -57,26 +49,18 @@ function ajaxCall(method, api, data, successCB, errorCB) {
     });
 }
 
-// =========================================
-// כשהדף מוכן (האזנה לאירועים ראשיים)
-// =========================================
+
 $(document).ready(function () {
 
-    // 1. בדיקת סטטוס התחברות
     checkLoginStatus();
 
-    // 2. טעינת הרשימות הפרטיות של המשתמש המחובר!
     loadUserLists();
 
-    // -- מאזינים לדף הבית (index.html) --
-    $("#loadCountriesBtn").click(function () {
-        loadCountries();
-    });
+    loadCountries();
 
     $(document).on("keyup", "#searchInput", applyFiltersAndSort);
     $(document).on("change", "#regionFilter, #sortBy, #currencyFilter", applyFiltersAndSort);
 
-    // -- מאזינים להרשמה והתחברות --
     $("#loginForm").submit(function (event) { loginUser(event); });
     $("#btnRegister").click(function (event) { registerUser(event); });
 
@@ -88,10 +72,10 @@ $(document).ready(function () {
         window.location.reload();
     });
 
-    // הגנה על תיבות הסימון - עצירת הקליק אם המשתמש לא מחובר או נעול
+    
     $(document).on('click', '.list-box input[type="checkbox"]', function (e) {
         if (!isLoggedIn()) {
-            e.preventDefault(); // מונע מה-V להופיע בתיבה
+            e.preventDefault(); 
             alert("עליך להתחבר לאתר תחילה כדי לנהל את הרשימות שלך.");
             return false;
         }
@@ -102,37 +86,22 @@ $(document).ready(function () {
         }
     });
 
-    // טעינת מדינות בעת כניסה לדף החידונים
-    if ($("#quizSelectionScreen").length > 0) {
-        ajaxCall("GET", `${apiUrl}/GetAllCountries`, null, function (data) {
-            allCountries = data.filter(c => c !== null);
-        }, function (err) { console.error("שגיאה בטעינת מדינות לחידון"); });
-    }
-    // =========================================
-    // טעינת דף המפה (my-lists.html) בלבד!
-    // =========================================
-    if ($("#world-map").length > 0) {
-        initMyListsPage();
-    }
-
-    // מאזינים לשינויים ברשימות הצד של המפה
     $(document).on('change', '.list-cb', function () {
-        let id = $(this).data("id");
+        let id = String($(this).attr("data-id"));
         let listName = $(this).data("list");
 
         if (this.checked) {
-            if (!userLists[listName].includes(id)) {
+            if (!userLists[listName].some(x => String(x) === id)) {
                 userLists[listName].push(id);
             }
         } else {
-            userLists[listName] = userLists[listName].filter(x => x !== id);
+            userLists[listName] = userLists[listName].filter(x => String(x) !== id);
         }
 
-        saveUserLists(); // שמירה דינמית
+        saveUserLists();
         updateMapColors();
     });
 
-    // חיפוש ברשימות הצד
     $(document).on('keyup', '#mapSearch', function () {
         let text = $(this).val().toLowerCase().trim();
         $(".check-item").each(function () {
@@ -144,33 +113,78 @@ $(document).ready(function () {
             }
         });
     });
-    // הגנת דפים למשתמשים נעולים
     if (window.location.pathname.includes("my-lists.html") || window.location.pathname.includes("quizzes.html")) {
         if (isUserLocked()) {
             alert("חשבונך הוגבל על ידי הנהלת האתר. אין לך גישה לעמוד זה.");
-            window.location.href = "../index.html"; // זורק אותו חזרה לדף הבית
+            window.location.href = "../index.html"; 
             return;
         }
     }
+
+    $(document).on("click", "#btnEditProfile", function (e) {
+        e.preventDefault();
+        $("#editFirstName").val("");
+        $("#editLastName").val("");
+        $("#editPassword").val("");
+        $("#editProfileModal").fadeIn();
+    });
+
+    $(document).on("submit", "#editProfileForm", function (e) {
+        e.preventDefault();
+
+        let currentEmail = sessionStorage.getItem("loggedInEmail");
+
+        let typedFName = $("#editFirstName").val().trim();
+        let typedLName = $("#editLastName").val().trim();
+        let typedPassword = $("#editPassword").val().trim();
+
+        if (typedFName === "" && typedLName === "" && typedPassword === "") {
+            alert("לא הזנת שום נתון לעדכון.");
+            return;
+        }
+
+        let updatedUser = {
+            Email: currentEmail,
+            FirstName: typedFName,
+            LastName: typedLName,
+            Password: typedPassword
+        };
+
+        $.ajax({
+            type: "PUT",
+            url: `${BASE_API_URL}Users/UpdateProfile`,
+            data: JSON.stringify(updatedUser),
+            contentType: "application/json",
+            success: function (res) {
+                alert("הפרופיל עודכן בהצלחה!");
+                $("#editProfileModal").fadeOut();
+
+                let currentFullName = sessionStorage.getItem("loggedInUser") || "";
+                let nameParts = currentFullName.split(" ");
+                let oldFName = nameParts[0] || "";
+                let oldLName = nameParts.slice(1).join(" ") || "";
+
+                let finalFName = typedFName !== "" ? typedFName : oldFName;
+                let finalLName = typedLName !== "" ? typedLName : oldLName;
+
+                let newFullName = finalFName + " " + finalLName;
+                sessionStorage.setItem("loggedInUser", newFullName);
+                $("#userGreeting").text("שלום, " + newFullName);
+            },
+            error: function (err) {
+                alert("שגיאה בעדכון הפרופיל.");
+                console.error(err);
+            }
+        });
+    });
+
 });
 
-// =========================================
-// פונקציות דף המפה (my-lists.html)
-// =========================================
+
 function initMyListsPage() {
-    $.ajax({
-        type: "GET",
-        url: `${apiUrl}/GetAllCountries`,
-        success: function (data) {
-            allCountries = data.filter(c => c !== null);
-            processCountriesData();
-            renderSidebars();
-            initMap();
-        },
-        error: function (err) {
-            console.error("שגיאה בטעינת מדינות", err);
-        }
-    });
+    processCountriesData();
+    renderSidebars();
+    initMap();
 }
 
 function processCountriesData() {
@@ -190,15 +204,32 @@ function renderSidebars() {
     $("#visited-list, #want-list, #favorite-list").empty();
     let sorted = [...allCountries].sort((a, b) => (a.name || "").localeCompare(b.name || ""));
 
+    let itemStyle = "display: flex; align-items: center; gap: 10px; padding: 8px 5px; margin-bottom: 2px; cursor: pointer; text-align: right; direction: rtl; width: 100%; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.2s;";
+
     sorted.forEach(c => {
         let checkVis = userLists["הייתי שם 🌍"].includes(c.id) ? "checked" : "";
-        $("#visited-list").append(`<label class="check-item"><input type="checkbox" class="list-cb" data-id="${c.id}" data-list="הייתי שם 🌍" ${checkVis}> ${c.name}</label>`);
+        $("#visited-list").append(
+            `<label class="check-item" style="${itemStyle}" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">
+                <input type="checkbox" class="list-cb" data-id="${c.id}" data-list="הייתי שם 🌍" ${checkVis} style="margin: 0; cursor: pointer;"> 
+                <span>${c.name}</span>
+            </label>`
+        );
 
         let checkWant = userLists["יעדים לטיסה ✈️"].includes(c.id) ? "checked" : "";
-        $("#want-list").append(`<label class="check-item"><input type="checkbox" class="list-cb" data-id="${c.id}" data-list="יעדים לטיסה ✈️" ${checkWant}> ${c.name}</label>`);
+        $("#want-list").append(
+            `<label class="check-item" style="${itemStyle}" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">
+                <input type="checkbox" class="list-cb" data-id="${c.id}" data-list="יעדים לטיסה ✈️" ${checkWant} style="margin: 0; cursor: pointer;"> 
+                <span>${c.name}</span>
+            </label>`
+        );
 
         let checkFav = userLists["מועדפים ❤️"].includes(c.id) ? "checked" : "";
-        $("#favorite-list").append(`<label class="check-item"><input type="checkbox" class="list-cb" data-id="${c.id}" data-list="מועדפים ❤️" ${checkFav}> ${c.name}</label>`);
+        $("#favorite-list").append(
+            `<label class="check-item" style="${itemStyle}" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">
+                <input type="checkbox" class="list-cb" data-id="${c.id}" data-list="מועדפים ❤️" ${checkFav} style="margin: 0; cursor: pointer;"> 
+                <span>${c.name}</span>
+            </label>`
+        );
     });
 }
 
@@ -214,49 +245,15 @@ function initMap() {
         onLoaded(map) {
             updateMapColors();
         },
-        // --- יצירת החלונית האינטראקטיבית המקצועית ---
-        onRegionTooltipShow(event, tooltip, code) {
-            let country = alpha2ToCountry[code];
-            if (country) {
-                let status = "לא נשמר ברשימות";
-                let statusColor = "#94a3b8";
-                let icon = "";
-
-                if (userLists["הייתי שם 🌍"].includes(country.id)) {
-                    status = "הייתי שם"; statusColor = "#2ecc71"; icon = "🌍";
-                } else if (userLists["יעדים לטיסה ✈️"].includes(country.id)) {
-                    status = "יעד לטיסה"; statusColor = "#f39c12"; icon = "✈️";
-                } else if (userLists["מועדפים ❤️"].includes(country.id)) {
-                    status = "במועדפים"; statusColor = "#ef4444"; icon = "❤️";
-                }
-
-                let tooltipHtml = `
-                    <div style="text-align: right; padding: 12px; min-width: 180px;">
-                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
-                            <img src="${country.flagImageUrl}" style="width: 30px; height: 20px; object-fit: cover; border-radius: 3px;">
-                            <strong style="font-size: 1.1rem;">${country.name}</strong>
-                        </div>
-                        <div style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 8px;">
-                            <i class="fas fa-city" style="color: #94a3b8; margin-left: 5px;"></i>בירה: ${country.city || 'לא צוין'}
-                        </div>
-                        <div style="font-size: 0.95rem; color: ${statusColor}; font-weight: bold;">
-                            ${icon} ${status}
-                        </div>
-                    </div>
-                `;
-                tooltip.html(tooltipHtml);
-            } else {
-                tooltip.html(`<div style="padding: 10px; text-align: center;">${tooltip.text()}<br><span style="color: #ef4444; font-size: 0.8rem;">מידע לא זמין</span></div>`);
-            }
+        onRegionTooltipShow(event) {
+            event.preventDefault();
         },
-        // --- לוגיקת לחיצה נקייה יותר ---
+       
         onRegionClick: function (event, code) {
-            // הברקס למשתמשים לא מחוברים
             if (!isLoggedIn()) {
                 alert("עליך להתחבר לאתר תחילה כדי לסמן מדינות על המפה.");
                 return;
             }
-            // הברקס למשתמשים נעולים (אם כבר הוספת אותו קודם)
             if (isUserLocked()) {
                 alert("חשבונך הוגבל. אינך מורשה לבצע פעולה זו.");
                 return;
@@ -265,22 +262,22 @@ function initMap() {
             let country = alpha2ToCountry[code];
             if (!country) return;
 
-            let id = country.id;
-            let isVisited = userLists["הייתי שם 🌍"].includes(id);
-            let isWant = userLists["יעדים לטיסה ✈️"].includes(id);
-            let isFav = userLists["מועדפים ❤️"].includes(id);
+            let id = String(country.id);
 
-            // סבב לחיצות פשוט: הייתי שם -> יעד לטיסה -> מועדף -> הסרה
+            let isVisited = userLists["הייתי שם 🌍"].some(x => String(x) === id);
+            let isWant = userLists["יעדים לטיסה ✈️"].some(x => String(x) === id);
+            let isFav = userLists["מועדפים ❤️"].some(x => String(x) === id);
+
             if (!isVisited && !isWant && !isFav) {
                 userLists["הייתי שם 🌍"].push(id);
             } else if (isVisited) {
-                userLists["הייתי שם 🌍"] = userLists["הייתי שם 🌍"].filter(x => x !== id);
+                userLists["הייתי שם 🌍"] = userLists["הייתי שם 🌍"].filter(x => String(x) !== id);
                 userLists["יעדים לטיסה ✈️"].push(id);
             } else if (isWant) {
-                userLists["יעדים לטיסה ✈️"] = userLists["יעדים לטיסה ✈️"].filter(x => x !== id);
+                userLists["יעדים לטיסה ✈️"] = userLists["יעדים לטיסה ✈️"].filter(x => String(x) !== id);
                 userLists["מועדפים ❤️"].push(id);
             } else {
-                userLists["מועדפים ❤️"] = userLists["מועדפים ❤️"].filter(x => x !== id);
+                userLists["מועדפים ❤️"] = userLists["מועדפים ❤️"].filter(x => String(x) !== id);
             }
 
             saveUserLists();
@@ -312,39 +309,27 @@ function updateMapColors() {
 
 function syncCheckboxes() {
     $(".list-cb").each(function () {
-        let id = $(this).data("id");
+        let id = String($(this).attr("data-id"));
         let list = $(this).data("list");
-        $(this).prop("checked", userLists[list].includes(id));
+
+        let isIdInList = userLists[list].some(x => String(x) === id);
+        $(this).prop("checked", isIdInList);
     });
 }
 
-// =========================================
-// פונקציית בדיקת מצב התחברות (UI)
-// =========================================
-// =========================================
-// פונקציית בדיקת מצב התחברות (UI)
-// =========================================
-// =========================================
-// פונקציית בדיקת מצב התחברות (UI)
-// =========================================
-// =========================================
-// פונקציית בדיקת מצב התחברות (UI)
-// =========================================
 function checkLoginStatus() {
     let loggedInUser = sessionStorage.getItem("loggedInUser");
     let isAdmin = sessionStorage.getItem("isAdmin") === "true";
 
     if (loggedInUser) {
-        // המשתמש מחובר
         $("#userGreetingLi").show();
         $("#userGreeting").text("שלום, " + loggedInUser);
         $("#logoutLi").show();
+        $("#editProfileLi").show();
 
-        // מסתיר את שני הכפתורים
         $("#loginLi").hide();
         $("#registerLi").hide();
 
-        // בדיקת ניהול
         if (isAdmin) {
             $("#adminLinkLi").show();
         } else {
@@ -352,20 +337,17 @@ function checkLoginStatus() {
         }
 
     } else {
-        // המשתמש לא מחובר
         $("#userGreetingLi").hide();
         $("#logoutLi").hide();
         $("#adminLinkLi").hide();
+        $("#editProfileLi").hide();
 
-        // מציג את שני הכפתורים הרגילים!
         $("#loginLi").show();
         $("#registerLi").show();
     }
 }
 
-// =========================================
-// אזור משתמשים - הרשמה והתחברות
-// =========================================
+
 function registerUser(event) {
     if (event) event.preventDefault();
     let newUser = {
@@ -380,7 +362,7 @@ function registerUser(event) {
         alert("הסיסמאות אינן תואמות!");
         return;
     }
-    ajaxCall("POST", `https://localhost:7277/api/Users/Register`, JSON.stringify(newUser), registerSuccess, registerError);
+    ajaxCall("POST", `${BASE_API_URL}Users/Register`, JSON.stringify(newUser), registerSuccess, registerError);
 }
 
 function registerSuccess(data) {
@@ -395,7 +377,7 @@ function registerError(err) {
 function loginUser(event) {
     if (event) event.preventDefault();
     let loginData = { Email: $("#email").val(), Password: $("#password").val() };
-    ajaxCall("POST", `https://localhost:7277/api/Users/Login`, JSON.stringify(loginData), loginSuccess, loginError);
+    ajaxCall("POST", `${BASE_API_URL}Users/Login`, JSON.stringify(loginData), loginSuccess, loginError);
 }
 
 function loginSuccess(data) {
@@ -410,15 +392,13 @@ function loginSuccess(data) {
     sessionStorage.setItem("isAdmin", data.user.IsAdmin !== undefined ? data.user.IsAdmin : data.user.isAdmin);
     sessionStorage.setItem("isMaster", data.user.IsMaster !== undefined ? data.user.IsMaster : data.user.isMaster);
 
-    // שומרים את מצב הנעילה בזיכרון!
     let isLocked = data.user.IsLocked !== undefined ? data.user.IsLocked : data.user.isLocked;
     sessionStorage.setItem("isLocked", isLocked);
 
     window.location.href = "../index.html";
 }
 
-// פונקציית עזר חכמה שבודקת אם המשתמש מוגבל
-// פונקציית עזר לבדיקה אם יש משתמש מחובר כרגע
+
 function isLoggedIn() {
     let email = sessionStorage.getItem("loggedInEmail");
     return email !== null && email !== "";
@@ -429,23 +409,39 @@ function isUserLocked() {
 
 function loginError(err) {
     if (err.responseText) {
-        alert(err.responseText); // יציג "החשבון ננעל" אם השרת חסם
+        alert(err.responseText); 
     } else {
         alert("שגיאה בהתחברות: בדוק את המייל והסיסמה.");
     }
 }
 
-// =========================================
-// דף הבית (index.html) - מדינות ורשימות קופצות
-// =========================================
+
 function loadCountries() {
-    ajaxCall("GET", `${apiUrl}/GetAllCountries`, null, getCountriesSuccess, getCountriesError);
+    let cachedData = sessionStorage.getItem("cachedCountries");
+
+    if (cachedData) {
+        console.log("טוען מדינות מהזיכרון המהיר (Cache)...");
+        let countries = JSON.parse(cachedData);
+        getCountriesSuccess(countries);
+    } else {
+        console.log("מושך מדינות מהשרת בפעם הראשונה...");
+        ajaxCall("GET", `${BASE_API_URL}Countries/GetAllCountries`, null, getCountriesSuccess, getCountriesError);
+    }
 }
 
 function getCountriesSuccess(countries) {
     allCountries = countries.filter(c => c !== null);
-    populateCurrencyDropdown();
-    renderCountries(allCountries);
+
+    sessionStorage.setItem("cachedCountries", JSON.stringify(allCountries));
+
+    if ($(".countries-grid").length > 0) {
+        populateCurrencyDropdown();
+        renderCountries(allCountries);
+    }
+
+    if ($("#world-map").length > 0) {
+        initMyListsPage();
+    }
 }
 
 function getCountriesError(err) {
@@ -556,7 +552,7 @@ function confirmSaveToList() {
         alert("המדינה כבר שמורה ברשימה זו!");
     } else {
         userLists[selectedList].push(currentSelectedCountryId);
-        saveUserLists(); // שמירה דינמית
+        saveUserLists(); 
         alert("נשמר בהצלחה!");
     }
     closeSaveModal();
@@ -611,7 +607,7 @@ function renderLists() {
 function removeFromList(countryId, listName) {
     if (confirm("האם אתה בטוח שברצונך להסיר את המדינה מהרשימה?")) {
         userLists[listName] = userLists[listName].filter(id => id !== countryId);
-        saveUserLists(); // שמירה דינמית
+        saveUserLists(); 
         renderLists();
     }
 }
@@ -640,14 +636,12 @@ function confirmMove() {
     if (!userLists[targetList].includes(countryToMoveId)) {
         userLists[targetList].push(countryToMoveId);
     }
-    saveUserLists(); // שמירה דינמית
+    saveUserLists(); 
     closeMoveModal();
     renderLists();
 }
 
-// =========================================
-// מערכת שיתופים וקהילה (Shares CRUD)
-// =========================================
+
 let currentSharesCountryId = "";
 
 function openSharesModal(countryId, countryName) {
@@ -674,7 +668,7 @@ function closeSharesModal() {
 }
 
 function loadShares() {
-    ajaxCall("GET", `https://localhost:7277/api/Shares/GetByCountry/${currentSharesCountryId}`, null, renderShares, renderSharesError);
+    ajaxCall("GET", `${BASE_API_URL}Shares/GetByCountry/${currentSharesCountryId}`, null, renderShares, renderSharesError);
 }
 
 function renderShares(sharesList) {
@@ -745,7 +739,7 @@ function postShare() {
 
     $.ajax({
         type: "POST",
-        url: `https://localhost:7277/api/Shares/AddShare`,
+        url: `${BASE_API_URL}Shares/AddShare`,
         data: JSON.stringify(newShare),
         contentType: "application/json",
         success: function () {
@@ -767,7 +761,7 @@ function deleteShare(shareId) {
     if (confirm("האם אתה בטוח שברצונך למחוק את השיתוף?")) {
         $.ajax({
             type: "DELETE",
-            url: `https://localhost:7277/api/Shares/DeleteShare/${shareId}`,
+            url: `${BASE_API_URL}Shares/DeleteShare/${shareId}`,
             success: function () { loadShares(); },
             error: function () { alert("שגיאה במחיקת השיתוף."); }
         });
@@ -785,7 +779,7 @@ function editShare(shareId, currentContent) {
 
         $.ajax({
             type: "PUT",
-            url: `https://localhost:7277/api/Shares/UpdateShare`,
+            url: `${BASE_API_URL}Shares/UpdateShare`,
             data: JSON.stringify(updatedShare),
             contentType: "application/json",
             success: function () {
@@ -799,9 +793,7 @@ function editShare(shareId, currentContent) {
     }
 }
 
-// =========================================
-// מנוע מערכת החידונים מוגבלי זמן (quizzes.html)
-// =========================================
+
 let currentQuizType = "";
 let quizTimer;
 let timeLeft = 60;
@@ -834,7 +826,6 @@ function initQuiz(type) {
 
     generateQuestion();
 
-    // הפעלת שעון העצר (טיימר) שיורד כל שנייה
     quizTimer = setInterval(function () {
         timeLeft--;
         $("#timeRemaining").text(timeLeft);
@@ -845,18 +836,16 @@ function initQuiz(type) {
 }
 
 function generateQuestion() {
-    // שלוף 4 מדינות רנדומליות
     let shuffledCountries = [...allCountries].sort(() => 0.5 - Math.random());
     let options = shuffledCountries.slice(0, 4);
-    let correctCountry = options[Math.floor(Math.random() * 4)]; // בחירת התשובה הנכונה
+    let correctCountry = options[Math.floor(Math.random() * 4)]; 
 
     let questionHtml = "";
     $("#optionsContainer").empty();
 
     if (currentQuizType === 'capitals') {
-        // נוודא שלמדינה שנבחרה אכן יש עיר בירה
         if (!correctCountry.city || correctCountry.city.trim() === "") {
-            generateQuestion(); // הגרל מחדש אם אין בירה
+            generateQuestion(); 
             return;
         }
         currentCorrectAnswer = correctCountry.city;
@@ -868,7 +857,6 @@ function generateQuestion() {
         });
 
     } else if (currentQuizType === 'flags') {
-        // נוודא שיש תמונת דגל תקינה
         if (!correctCountry.flagImageUrl || !correctCountry.flagImageUrl.startsWith("http")) {
             generateQuestion();
             return;
@@ -888,7 +876,6 @@ function generateQuestion() {
 }
 
 function checkAnswer(btnElement, selectedAnswer) {
-    // נטרול לחיצות כפולות
     $(".quiz-option-btn").prop("disabled", true);
 
     if (selectedAnswer === currentCorrectAnswer) {
@@ -896,13 +883,11 @@ function checkAnswer(btnElement, selectedAnswer) {
         score++;
     } else {
         $(btnElement).addClass("wrong");
-        // צביעת התשובה הנכונה בירוק כדי שהמשתמש ילמד
         $(".quiz-option-btn").each(function () {
             if ($(this).text() === currentCorrectAnswer) $(this).addClass("correct");
         });
     }
 
-    // המתנה של שנייה ומעבר לשאלה הבאה (כל עוד נשאר זמן)
     setTimeout(() => {
         if (timeLeft > 0) {
             generateQuestion();
@@ -911,17 +896,16 @@ function checkAnswer(btnElement, selectedAnswer) {
 }
 
 function endQuiz() {
-    clearInterval(quizTimer); // עצירת הטיימר
+    clearInterval(quizTimer); 
     $("#activeQuizScreen").hide();
 
     let userEmail = sessionStorage.getItem("loggedInEmail");
-    let earnedPoints = score * 10; // 10 נקודות לכל תשובה נכונה
+    let earnedPoints = score * 10; 
 
     $("#finalScore").text(score);
 
     if (score > 0) {
         $("#pointsMessage").text(`כל הכבוד! הרווחת ${earnedPoints} נקודות פרופיל.`);
-        // כאן הקריאה לשרת לעדכון הנקודות!
         updateUserPointsInDB(userEmail, earnedPoints);
     } else {
         $("#pointsMessage").text("לא נורא, נסה שוב כדי לצבור נקודות!");
@@ -935,29 +919,29 @@ function backToQuizSelection() {
     $("#quizSelectionScreen").fadeIn();
 }
 
-// קריאה לשרת לעדכון הנקודות (צד לקוח)
 function updateUserPointsInDB(email, pointsToAdd) {
-    let requestData = { Email: email, PointsToAdd: pointsToAdd };
+    let requestData = {
+        Email: email,
+        QuizType: currentQuizType, 
+        Score: pointsToAdd
+    };
 
     $.ajax({
-        type: "PUT",
-        url: `https://localhost:7277/api/Users/AddPoints`,
+        type: "POST", 
+        url: `${BASE_API_URL}Users/UpdateHighScore`,
         data: JSON.stringify(requestData),
         contentType: "application/json",
         success: function () {
-            console.log("הנקודות עודכנו בהצלחה בשרת.");
+            console.log("הציון נשלח לשרת (יעודכן רק אם זה שיא חדש).");
         },
         error: function (err) {
-            console.error("שגיאה בעדכון נקודות:", err);
+            console.error("שגיאה בעדכון שיא:", err);
         }
     });
 }
 
-// =========================================
-// אבטחה ולוגיקה - פאנל מנהל
-// =========================================
+
 $(document).ready(function () {
-    // הגנת דף מנהל - אם מישהו מנסה להיכנס לדף והוא לא מנהל - נזרוק אותו הביתה!
     if (window.location.pathname.includes("admin.html")) {
         if (sessionStorage.getItem("isAdmin") !== "true") {
             alert("אין לך הרשאת גישה לדף זה!");
@@ -970,12 +954,11 @@ $(document).ready(function () {
 });
 
 function loadAdminStats() {
-    ajaxCall("GET", `https://localhost:7277/api/Admin/GetStats`, null, function (data) {
+    ajaxCall("GET", `${BASE_API_URL}Admin/GetStats`, null, function (data) {
         $("#statLogins").text(data.dailyLogins);
         $("#statCountries").text(data.totalCountries);
         $("#statShares").text(data.totalShares);
 
-        // חישוב המדינות שנשמרו ב-LocalStorage (כפי שביקשו) מכל המשתמשים שהתחברו לדפדפן זה
         let totalSavedLocal = 0;
         for (let i = 0; i < localStorage.length; i++) {
             let key = localStorage.key(i);
@@ -990,7 +973,7 @@ function loadAdminStats() {
 }
 
 function loadAdminUsers() {
-    ajaxCall("GET", `https://localhost:7277/api/Admin/GetUsers`, null, function (users) {
+    ajaxCall("GET", `${BASE_API_URL}Admin/GetUsers`, null, function (users) {
         let tbody = $("#adminUsersList");
         tbody.empty();
 
@@ -1015,23 +998,18 @@ function loadAdminUsers() {
             let adminBtn = "";
 
             if (u_isMaster) {
-                // מאסטר חסין מהכל
                 actionBtn = `<span style="color:#94a3b8;">חסין מנעילה</span>`;
                 adminBtn = `<span style="color:#94a3b8;">-</span>`;
             } else if (currentUserIsMaster) {
-                // למאסטר המחובר מותר לעשות הכל על כולם
                 actionBtn = u_isLocked ? `<button class="btn-unlock" onclick="toggleLock('${email}', false)">שחרר נעילה</button>`
                     : `<button class="btn-lock" onclick="toggleLock('${email}', true)">נעל משתמש</button>`;
                 adminBtn = u_isAdmin ? `<button class="btn-demote" onclick="toggleAdmin('${email}', false)">הסר ניהול</button>`
                     : `<button class="btn-promote" onclick="toggleAdmin('${email}', true)">מנהל חדש</button>`;
             } else if (currentUserIsAdmin) {
-                // מנהל רגיל המחובר מסתכל על משתמשים אחרים
                 if (u_isAdmin) {
-                    // מנהל לא נוגע במנהל אחר
                     actionBtn = `<span style="color:#94a3b8;">אין הרשאה</span>`;
                     adminBtn = `<span style="color:#94a3b8;">אין הרשאה</span>`;
                 } else {
-                    // מנהל יכול לנעול משתמש רגיל, אבל לא יכול לקדם אותו
                     actionBtn = u_isLocked ? `<button class="btn-unlock" onclick="toggleLock('${email}', false)">שחרר נעילה</button>`
                         : `<button class="btn-lock" onclick="toggleLock('${email}', true)">נעל משתמש</button>`;
                     adminBtn = `<span style="color:#94a3b8;">מאסטר בלבד</span>`;
@@ -1053,17 +1031,15 @@ function loadAdminUsers() {
     }, function (err) { console.error("שגיאה בטעינת משתמשים", err); });
 }
 
-// פונקציה חדשה לניהול סטטוס מנהל מהטבלה
-// פונקציה לניהול סטטוס מנהל מהטבלה
 function toggleAdmin(email, isAdminState) {
     let actionText = isAdminState ? 'להפוך משתמש זה למנהל' : 'להסיר הרשאות ניהול ממשתמש זה';
     if (confirm(`האם אתה בטוח שברצונך ${actionText}?`)) {
 
-        let safeEmail = encodeURIComponent(email); // הגנה על כתובת המייל ב-URL
+        let safeEmail = encodeURIComponent(email); 
 
         $.ajax({
             type: "PUT",
-            url: `https://localhost:7277/api/Admin/ToggleAdmin/${safeEmail}/${isAdminState}`,
+            url: `${BASE_API_URL}Admin/ToggleAdmin/${safeEmail}/${isAdminState}`,
             success: function () {
                 loadAdminUsers();
             },
@@ -1075,7 +1051,6 @@ function toggleAdmin(email, isAdminState) {
     }
 }
 
-// שדרוג אותה הגנה גם לפונקציית הנעילה ליתר ביטחון
 function toggleLock(email, lockState) {
     if (confirm(`האם אתה בטוח שברצונך ${lockState ? 'לנעול' : 'לשחרר'} משתמש זה?`)) {
 
@@ -1083,7 +1058,7 @@ function toggleLock(email, lockState) {
 
         $.ajax({
             type: "PUT",
-            url: `https://localhost:7277/api/Admin/ToggleLock/${safeEmail}/${lockState}`,
+            url: `${BASE_API_URL}Admin/ToggleLock/${safeEmail}/${lockState}`,
             success: function () {
                 loadAdminUsers();
             },
@@ -1095,9 +1070,7 @@ function toggleLock(email, lockState) {
     }
 }
 
-// =========================================
-// מודל פרטים מורחבים על מדינה
-// =========================================
+
 function openDetailsModal(countryId) {
     let country = allCountries.find(c => String(c.id) === String(countryId));
     if (!country) return;
@@ -1146,7 +1119,6 @@ function openDetailsModal(countryId) {
     $("#detailsModal").fadeIn();
 }
 
-// פונקציית הקריאה לשרת ה-AI
 function generateAIItinerary(countryName) {
     if (!isLoggedIn()) {
         alert("רק משתמשים מחוברים יכולים להשתמש בסוכן הנסיעות החכם. אנא התחבר תחילה.");
@@ -1154,7 +1126,6 @@ function generateAIItinerary(countryName) {
     }
     let userMsg = $("#aiUserInput").val();
 
-    // נוודא שהמשתמש באמת כתב משהו
     if (!userMsg || userMsg.trim() === "") {
         alert("אנא כתוב בקשה או שאלה לבינה המלאכותית לפני השליחה.");
         return;
@@ -1164,21 +1135,19 @@ function generateAIItinerary(countryName) {
     $("#aiResultBox").hide();
     $("#aiLoading").fadeIn();
 
-    // מכינים את האובייקט לשליחה לשרת (תואם למחלקת AiRequest ב-C#)
     let requestData = {
         CountryName: countryName,
         UserPrompt: userMsg
     };
 
     $.ajax({
-        type: "POST", // שינינו ל-POST!
-        url: `https://localhost:7277/api/AI/AskAI`,
+        type: "POST", 
+        url: `${BASE_API_URL}AI/AskAI`,
         contentType: "application/json",
         data: JSON.stringify(requestData),
         success: function (data) {
             $("#aiLoading").hide();
             $("#btnAiItinerary").show();
-            // מרוקנים את תיבת הטקסט לטובת השאלה הבאה
             $("#aiUserInput").val("");
             $("#aiResultBox").html(data.itinerary).fadeIn();
         },
@@ -1196,27 +1165,20 @@ function closeDetailsModal() {
     $("#detailsModal").fadeOut();
 }
 
-// =========================================
-// מנגנון העלמת מסך הטעינה (Preloader)
-// =========================================
+
 $(window).on('load', function () {
-    // הוספנו השהייה קלה של 800 אלפיות השנייה (קצת פחות משנייה)
-    // כדי לתת לשרת לסיים לשלוף את המדינות, וכדי שנספיק לראות את האפקט
+
     setTimeout(function () {
         $("#preloader").fadeOut(600, function () {
-            // אחרי שהמסך התפוגג, נסיר אותו לגמרי מה-DOM כדי שלא יפריע ללחיצות
             $(this).remove();
         });
     }, 800);
 });
-// =========================================
-// מנוע כדור ארץ תלת-ממדי כרקע כללי (Globe.gl)
-// =========================================
+
 document.addEventListener("DOMContentLoaded", function () {
     const container = document.getElementById('globeBackground');
     if (!container) return;
 
-    // נקודות ציון גלובליות שיופיעו על כדור הארץ ברקע
     const globalPoints = [
         { lat: 32.0853, lng: 34.7818, name: "תל אביב (הבסיס שלנו)", color: "#2ecc71", size: 1.5 },
         { lat: 44.4268, lng: 26.1025, name: "בוקרשט", color: "#f39c12", size: 1.2 },
@@ -1225,13 +1187,12 @@ document.addEventListener("DOMContentLoaded", function () {
         { lat: 51.5074, lng: -0.1278, name: "לונדון", color: "#a855f7", size: 1.2 }
     ];
 
-    // יצירת הכדור על כל מסך החלון
-    // יצירת הכדור על כל מסך החלון
+
     const World = Globe()
         (container)
-        .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-night.jpg') // מפת לילה מוארת
-        .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')   // טופוגרפיה
-        .backgroundImageUrl('https://unpkg.com/three-globe/example/img/night-sky.png') // <--- הוספנו את תמונת החלל המובנית של הספרייה
+        .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-night.jpg') 
+        .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')   
+        .backgroundImageUrl('https://unpkg.com/three-globe/example/img/night-sky.png') 
         .pointsData(globalPoints)
         .pointLat('lat')
         .pointLng('lng')
@@ -1240,20 +1201,60 @@ document.addEventListener("DOMContentLoaded", function () {
         .pointRadius(d => d.size)
         .pointLabel('name');
 
-    // התאמה ראשונית לגודל המסך
     World.width(window.innerWidth);
     World.height(window.innerHeight);
 
-    // עדכון אוטומטי אם משנים את גודל חלון הדפדפן
     window.addEventListener('resize', () => {
         World.width(window.innerWidth);
         World.height(window.innerHeight);
     });
 
-    // סיבוב אוטומטי איטי ויוקרתי ברקע
     World.controls().autoRotate = true;
     World.controls().autoRotateSpeed = 0.4;
 
-    // זווית התחלתית מרכזית לכיוון אזור המזרח התיכון/אירופה
     World.pointOfView({ lat: 25, lng: 35, altitude: 2.3 });
 });
+
+function openLeaderboard() {
+    $("#leaderboardModal").fadeIn();
+
+    // משיכת נתונים לחידון ערי בירה
+    fetchLeaderboard('capitals', '#capitalsLeaderboardBody');
+
+    // משיכת נתונים לחידון דגלים
+    fetchLeaderboard('flags', '#flagsLeaderboardBody');
+}
+
+function fetchLeaderboard(quizType, tableBodySelector) {
+    let tbody = $(tableBodySelector);
+    tbody.html('<tr><td colspan="3" style="text-align:center;">טוען נתונים...</td></tr>');
+
+    $.ajax({
+        type: "GET",
+        url: `${BASE_API_URL}Users/GetLeaderboard/${quizType}`,
+        success: function (data) {
+            tbody.empty();
+
+            if (!data || data.length === 0) {
+                tbody.html('<tr><td colspan="3" style="text-align:center; color: #94a3b8;">עדיין אין שיאים.</td></tr>');
+                return;
+            }
+
+            data.forEach((player, index) => {
+                let rankIcon = (index === 0) ? "🥇" : (index === 1) ? "🥈" : (index === 2) ? "🥉" : `${index + 1}`;
+                let row = `
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <td style="padding: 8px; font-weight: bold; color: #f59e0b;">${rankIcon}</td>
+                        <td style="padding: 8px;">${player.fullName}</td>
+                        <td style="padding: 8px; font-weight: bold; color: #2ecc71;">${player.score}</td>
+                    </tr>
+                `;
+                tbody.append(row);
+            });
+        },
+        error: function (err) {
+            tbody.html('<tr><td colspan="3" style="text-align:center; color: #ef4444;">שגיאה בטעינה</td></tr>');
+            console.error(err);
+        }
+    });
+}
