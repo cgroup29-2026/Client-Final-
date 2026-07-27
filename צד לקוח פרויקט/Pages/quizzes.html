@@ -10,10 +10,8 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 <body class="quiz-page-bg">
-    <!-- מסך טעינה - Preloader -->
     <div id="preloader">
         <div class="loader-content">
-            <!-- לוגו של גינס עם רקע שקוף -->
             <p>מוזג את הנתונים... 🍻</p>
         </div>
     </div>
@@ -27,7 +25,6 @@
                 <li><a href="my-lists.html">הרשימות שלי</a></li>
                 <li><a href="quizzes.html">חידונים</a></li>
 
-                <!-- הקישור למנהל -->
                 <li id="adminLinkLi" style="display: none;">
                     <a href="admin.html" style="color: #f59e0b; font-weight: bold;"><i class="fas fa-crown"></i> פאנל מנהל</a>
                 </li>
@@ -40,14 +37,14 @@
 
     <main class="container fade-in-up" style="margin-top: 50px; max-width: 800px;">
 
-        <!-- מסך 1: בחירת חידון -->
         <div id="quizSelectionScreen">
-            <!-- תיבת הכותרת המשופרת -->
             <div class="hero-header-box">
                 <h1 style="margin: 0; color: white; font-size: 2.5rem;">אתגר המדינות הגדול</h1>
                 <p style="margin: 10px 0 0 0; color: #e2e8f0; font-size: 1.2rem;">בחר חידון, ענה על כמה שיותר שאלות ב-60 שניות, וצבור נקודות!</p>
             </div>
-
+            <button class="btn" onclick="openLeaderboard()" style="background: linear-gradient(45deg, #f59e0b, #f1c40f); color: #000; font-weight: bold; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; margin-bottom: 20px;">
+                🏆 טבלת אלופים - TOP 10
+            </button>
             <div style="display: flex; gap: 30px; justify-content: center;">
                 <div class="quiz-card" onclick="initQuiz('capitals')">
                     <i class="fas fa-city" style="font-size: 3rem; color: #3b82f6; margin-bottom: 15px;"></i>
@@ -65,7 +62,6 @@
             </div>
         </div>
 
-        <!-- מסך 2: החידון הפעיל -->
         <div id="activeQuizScreen" style="display: none; background: rgba(15, 23, 42, 0.9); border: 1px solid var(--glass-border); border-radius: 20px; padding: 30px; box-shadow: var(--glass-shadow);">
 
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 20px;">
@@ -76,15 +72,12 @@
             </div>
 
             <div id="questionContainer" style="text-align: center; min-height: 250px;">
-                <!-- השאלה והתמונה יוזרקו לכאן -->
             </div>
 
             <div id="optionsContainer" class="quiz-options-grid">
-                <!-- 4 כפתורי התשובות יוזרקו לכאן -->
             </div>
         </div>
 
-        <!-- מסך 3: תוצאות -->
         <div id="quizResultScreen" style="display: none; text-align: center; background: rgba(15, 23, 42, 0.9); border: 1px solid var(--glass-border); border-radius: 20px; padding: 40px; box-shadow: var(--glass-shadow);">
             <i class="fas fa-trophy" style="font-size: 4rem; color: #f59e0b; margin-bottom: 20px;"></i>
             <h2 style="font-size: 2.5rem; margin-top: 0;">הזמן עבר!</h2>
@@ -95,7 +88,46 @@
         </div>
 
     </main>
+    <div id="leaderboardModal" class="modal" style="display:none; position: fixed; z-index: 9999; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8);">
+        <div class="modal-content" style="position: relative; margin: 5% auto; padding: 30px; width: 90%; max-width: 800px; background: #1e293b; border-radius: 12px; color: white;">
+            <span class="close" onclick="$('#leaderboardModal').fadeOut()" style="cursor: pointer; float: left; font-size: 28px;">&times;</span>
+            <h2 style="text-align: center; color: #f59e0b; margin-bottom: 30px;"><i class="fas fa-trophy"></i> היכל התהילה</h2>
 
+            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+
+                <div style="flex: 1; min-width: 300px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border-top: 3px solid #3b82f6;">
+                    <h3 style="text-align: center; color: #3b82f6; margin-bottom: 15px;">חידון ערי בירה</h3>
+                    <table style="width: 100%; text-align: right; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.2);">
+                                <th style="padding: 10px;">דירוג</th>
+                                <th style="padding: 10px;">שחקן</th>
+                                <th style="padding: 10px;">שיא</th>
+                            </tr>
+                        </thead>
+                        <tbody id="capitalsLeaderboardBody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="flex: 1; min-width: 300px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border-top: 3px solid #ef4444;">
+                    <h3 style="text-align: center; color: #ef4444; margin-bottom: 15px;">אתגר הדגלים</h3>
+                    <table style="width: 100%; text-align: right; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.2);">
+                                <th style="padding: 10px;">דירוג</th>
+                                <th style="padding: 10px;">שחקן</th>
+                                <th style="padding: 10px;">שיא</th>
+                            </tr>
+                        </thead>
+                        <tbody id="flagsLeaderboardBody">
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
     <script src="../JS/AjaxCall.js"></script>
 </body>
 </html>
