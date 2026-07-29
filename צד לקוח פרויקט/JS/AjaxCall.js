@@ -15,24 +15,53 @@ let currentSelectedCountryId = "";
 let countryToMoveId = "";
 let currentMoveList = "";
 
-function getListStorageKey() {
-    let email = sessionStorage.getItem("loggedInEmail") || "guest";
-    return "userLists_" + email;
-}
-
 function loadUserLists() {
-    let key = getListStorageKey();
-    let savedLists = JSON.parse(localStorage.getItem(key));
-    if (savedLists) {
-        userLists = savedLists;
-    } else {
+    let email = sessionStorage.getItem("loggedInEmail");
+
+    if (!email) {
         userLists = { "מועדפים ❤️": [], "יעדים לטיסה ✈️": [], "הייתי שם 🌍": [] };
+        return;
     }
+
+    $.ajax({
+        type: "GET",
+        url: `${BASE_API_URL}Users/GetUserLists/${encodeURIComponent(email)}`,
+        success: function (data) {
+            userLists = data;
+            console.log("רשימות נטענו מהשרת בהצלחה!");
+
+            if (typeof syncCheckboxes === "function") syncCheckboxes();
+            if (typeof updateMapColors === "function") updateMapColors();
+        },
+        error: function (err) {
+            console.error("שגיאה במשיכת רשימות המשתמש מהשרת", err);
+            userLists = { "מועדפים ❤️": [], "יעדים לטיסה ✈️": [], "הייתי שם 🌍": [] };
+        }
+    });
 }
 
 function saveUserLists() {
-    let key = getListStorageKey();
-    localStorage.setItem(key, JSON.stringify(userLists));
+    let email = sessionStorage.getItem("loggedInEmail");
+
+    if (!email) return;
+
+    let requestData = {
+        Email: email,
+        Lists: userLists
+    };
+
+    $.ajax({
+        type: "POST",
+        url: `${BASE_API_URL}Users/SaveUserLists`,
+        data: JSON.stringify(requestData),
+        contentType: "application/json",
+        success: function () {
+            console.log("הרשימות עודכנו ב-SQL בהצלחה!");
+        },
+        error: function (err) {
+            console.error("שגיאה בשמירת הרשימות בשרת", err);
+        }
+    });
 }
 
 
@@ -54,8 +83,6 @@ $(document).ready(function () {
 
     checkLoginStatus();
 
-    loadUserLists();
-
     loadCountries();
 
     $(document).on("keyup", "#searchInput", applyFiltersAndSort);
@@ -66,10 +93,15 @@ $(document).ready(function () {
 
     $(document).on("click", "#btnLogout", function (e) {
         e.preventDefault();
-        sessionStorage.removeItem("loggedInUser");
-        sessionStorage.removeItem("loggedInEmail");
-        sessionStorage.clear();
-        window.location.reload();
+        $.ajax({
+            type: "POST",
+            url: `${BASE_API_URL}Users/Logout`,
+            xhrFields: { withCredentials: true },
+            success: function () {
+                currentUser = null;
+                window.location.reload();
+            }
+        });
     });
 
     
@@ -116,7 +148,7 @@ $(document).ready(function () {
     if (window.location.pathname.includes("my-lists.html") || window.location.pathname.includes("quizzes.html")) {
         if (isUserLocked()) {
             alert("חשבונך הוגבל על ידי הנהלת האתר. אין לך גישה לעמוד זה.");
-            window.location.href = "../index.html"; 
+            window.location.href = "index.html";
             return;
         }
     }
@@ -177,7 +209,9 @@ $(document).ready(function () {
             }
         });
     });
-
+    if ($("#nightlifeMap").length > 0) {
+        initNightlifeMap();
+    }
 });
 
 
@@ -317,34 +351,52 @@ function syncCheckboxes() {
     });
 }
 
+let currentUser = null; 
+
 function checkLoginStatus() {
-    let loggedInUser = sessionStorage.getItem("loggedInUser");
-    let isAdmin = sessionStorage.getItem("isAdmin") === "true";
+    $.ajax({
+        type: "GET",
+        url: `${BASE_API_URL}Users/CheckSession`,
+        xhrFields: {
+            withCredentials: true
+        },
+        success: function (user) {
+            currentUser = user;
 
-    if (loggedInUser) {
-        $("#userGreetingLi").show();
-        $("#userGreeting").text("שלום, " + loggedInUser);
-        $("#logoutLi").show();
-        $("#editProfileLi").show();
+            sessionStorage.setItem("loggedInEmail", user.email);
+            sessionStorage.setItem("loggedInUser", user.fullName);
+            sessionStorage.setItem("isAdmin", user.isAdmin);
+            sessionStorage.setItem("isMaster", user.isMaster);
 
-        $("#loginLi").hide();
-        $("#registerLi").hide();
+            loadUserLists();
 
-        if (isAdmin) {
-            $("#adminLinkLi").show();
-        } else {
+            $("#userGreetingLi").show();
+            $("#userGreeting").text("שלום, " + user.fullName);
+            $("#logoutLi").show();
+            $("#editProfileLi").show();
+            $("#loginLi").hide();
+            $("#registerLi").hide();
+
+            if (user.isAdmin) {
+                $("#adminLinkLi").show();
+            } else {
+                $("#adminLinkLi").hide();
+            }
+        },
+        error: function () {
+            currentUser = null;
+            sessionStorage.removeItem("loggedInEmail");
+
+            userLists = { "מועדפים ❤️": [], "יעדים לטיסה ✈️": [], "הייתי שם 🌍": [] };
+
+            $("#userGreetingLi").hide();
+            $("#logoutLi").hide();
             $("#adminLinkLi").hide();
+            $("#editProfileLi").hide();
+            $("#loginLi").show();
+            $("#registerLi").show();
         }
-
-    } else {
-        $("#userGreetingLi").hide();
-        $("#logoutLi").hide();
-        $("#adminLinkLi").hide();
-        $("#editProfileLi").hide();
-
-        $("#loginLi").show();
-        $("#registerLi").show();
-    }
+    });
 }
 
 
@@ -382,29 +434,16 @@ function loginUser(event) {
 
 function loginSuccess(data) {
     alert("התחברת בהצלחה!");
-    let fName = data.user.FirstName || data.user.firstName || "";
-    let lName = data.user.LastName || data.user.lastName || "";
-    let fullName = (fName + " " + lName).trim();
-    if (!fullName) fullName = "משתמש";
-
-    sessionStorage.setItem("loggedInUser", fullName);
-    sessionStorage.setItem("loggedInEmail", data.user.Email || data.user.email);
-    sessionStorage.setItem("isAdmin", data.user.IsAdmin !== undefined ? data.user.IsAdmin : data.user.isAdmin);
-    sessionStorage.setItem("isMaster", data.user.IsMaster !== undefined ? data.user.IsMaster : data.user.isMaster);
-
-    let isLocked = data.user.IsLocked !== undefined ? data.user.IsLocked : data.user.isLocked;
-    sessionStorage.setItem("isLocked", isLocked);
-
-    window.location.href = "../index.html";
+    window.location.href = "index.html";
 }
 
 
 function isLoggedIn() {
-    let email = sessionStorage.getItem("loggedInEmail");
-    return email !== null && email !== "";
+    return currentUser !== null;
 }
+
 function isUserLocked() {
-    return sessionStorage.getItem("isLocked") === "true";
+    return currentUser !== null && currentUser.isLocked === true;
 }
 
 function loginError(err) {
@@ -417,22 +456,11 @@ function loginError(err) {
 
 
 function loadCountries() {
-    let cachedData = sessionStorage.getItem("cachedCountries");
-
-    if (cachedData) {
-        console.log("טוען מדינות מהזיכרון המהיר (Cache)...");
-        let countries = JSON.parse(cachedData);
-        getCountriesSuccess(countries);
-    } else {
-        console.log("מושך מדינות מהשרת בפעם הראשונה...");
-        ajaxCall("GET", `${BASE_API_URL}Countries/GetAllCountries`, null, getCountriesSuccess, getCountriesError);
-    }
+    ajaxCall("GET", `${BASE_API_URL}Countries/GetAllCountries`, null, getCountriesSuccess, getCountriesError);
 }
 
 function getCountriesSuccess(countries) {
     allCountries = countries.filter(c => c !== null);
-
-    sessionStorage.setItem("cachedCountries", JSON.stringify(allCountries));
 
     if ($(".countries-grid").length > 0) {
         populateCurrencyDropdown();
@@ -945,7 +973,7 @@ $(document).ready(function () {
     if (window.location.pathname.includes("admin.html")) {
         if (sessionStorage.getItem("isAdmin") !== "true") {
             alert("אין לך הרשאת גישה לדף זה!");
-            window.location.href = "../index.html";
+            window.location.href = window.location.href = "index.html";
         } else {
             loadAdminStats();
             loadAdminUsers();
@@ -960,13 +988,7 @@ function loadAdminStats() {
         $("#statShares").text(data.totalShares);
 
         let totalSavedLocal = 0;
-        for (let i = 0; i < localStorage.length; i++) {
-            let key = localStorage.key(i);
-            if (key.startsWith("userLists_")) {
-                let lists = JSON.parse(localStorage.getItem(key));
-                totalSavedLocal += lists["מועדפים ❤️"].length + lists["יעדים לטיסה ✈️"].length + lists["הייתי שם 🌍"].length;
-            }
-        }
+        $("#statSaved").text("נשמר ב-DB");
         $("#statSaved").text(totalSavedLocal);
 
     }, function (err) { console.error("שגיאה בטעינת סטטיסטיקות", err); });
@@ -1255,6 +1277,152 @@ function fetchLeaderboard(quizType, tableBodySelector) {
         error: function (err) {
             tbody.html('<tr><td colspan="3" style="text-align:center; color: #ef4444;">שגיאה בטעינה</td></tr>');
             console.error(err);
+        }
+    });
+}
+
+
+let nightlifeMap;
+let markersLayer;
+
+function initNightlifeMap() {
+    nightlifeMap = L.map('nightlifeMap').setView([32.0853, 34.7818], 14);
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap',
+        subdomains: 'abcd',
+        maxZoom: 19
+    }).addTo(nightlifeMap);
+
+    markersLayer = L.markerClusterGroup({
+        chunkedLoading: true,
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false,
+        maxClusterRadius: 50
+    }).addTo(nightlifeMap);
+
+    fetchPubsByRadius(32.0853, 34.7818);
+}
+
+function searchNightlife() {
+    if (typeof isUserLocked === "function" && isUserLocked()) {
+        alert("חשבונך הוגבל. אינך מורשה לבצע חיפושים במפה.");
+        return;
+    }
+
+    let cityName = $("#citySearchInput").val().trim();
+    if (!cityName) {
+        alert("אנא הקלד שם של עיר באנגלית (למשל: Tokyo, London, Tel Aviv).");
+        return;
+    }
+
+    $("#citySearchInput").prop("disabled", true);
+
+    if ($("#mapLoader").length === 0) {
+        $("#nightlifeMap").append('<div id="mapLoader" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); z-index:9999; background:rgba(15,23,42,0.95); border:1px solid #f59e0b; padding:20px 40px; border-radius:12px; color:#fcd34d; font-size:1.3rem; font-weight:bold; box-shadow:0 0 30px rgba(0,0,0,0.8);"><i class="fas fa-spinner fa-spin" style="margin-left: 10px;"></i> סורק את העיר...</div>');
+    } else {
+        $("#mapLoader").fadeIn();
+    }
+
+    $.ajax({
+        url: `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cityName)}&format=json&limit=1`,
+        type: 'GET',
+        success: function (geoData) {
+            $("#citySearchInput").prop("disabled", false);
+
+            if (!geoData || geoData.length === 0) {
+                $("#mapLoader").fadeOut();
+                alert("לא מצאנו את המקום הזה. נסה לאיית באנגלית.");
+                return;
+            }
+
+            let lat = parseFloat(geoData[0].lat);
+            let lon = parseFloat(geoData[0].lon);
+
+            nightlifeMap.flyTo([lat, lon], 14, { duration: 1.5 });
+
+            setTimeout(() => {
+                fetchPubsByRadius(lat, lon);
+            }, 1500);
+        },
+        error: function () {
+            $("#citySearchInput").prop("disabled", false);
+            $("#mapLoader").fadeOut();
+            alert("שגיאת תקשורת במציאת העיר. בדוק חיבור לאינטרנט.");
+        }
+    });
+}
+
+function fetchPubsByRadius(lat, lon) {
+    markersLayer.clearLayers();
+
+    let query = `
+        [out:json][timeout:15];
+        (
+          nwr["amenity"~"pub|bar"](around:2000, ${lat}, ${lon});
+        );
+        out center 250; 
+    `;
+
+    $.ajax({
+        type: "POST",
+        url: "https://lz4.overpass-api.de/api/interpreter",
+        data: { data: query },
+        success: function (data) {
+            $("#mapLoader").fadeOut();
+
+            let pubs = data.elements;
+            if (!pubs || pubs.length === 0) {
+                alert("לא מצאנו פאבים במאגר הפתוח בדיוק ברדיוס הזה.");
+                return;
+            }
+
+            let beerIcon = L.divIcon({
+                html: '<i class="fas fa-map-marker-alt custom-beer-icon" style="color: #f59e0b; font-size: 32px;"></i>',
+                className: 'empty-class',
+                iconSize: [32, 32],
+                iconAnchor: [16, 32],
+                popupAnchor: [0, -32]
+            });
+
+            let markersArray = [];
+
+            pubs.forEach(pub => {
+                let pLat = pub.lat || (pub.center && pub.center.lat);
+                let pLon = pub.lon || (pub.center && pub.center.lon);
+
+                if (pLat && pLon && pub.tags) {
+                    let name = pub.tags.name || pub.tags["name:en"] || "בר מקומי (ללא שם)";
+                    let street = pub.tags["addr:street"] || pub.tags["addr:full"] || "כתובת לא צוינה";
+                    let hours = pub.tags.opening_hours || "שעות לא צוינו";
+
+                    let popupContent = `
+                        <div style="text-align: right; padding: 5px;">
+                            <h3 style="color: #f59e0b; margin: 0 0 10px 0; font-size: 1.2rem; border-bottom: 1px solid rgba(245,158,11,0.3); padding-bottom: 5px;">
+                                <i class="fas fa-glass-cheers"></i> ${name}
+                            </h3>
+                            <p style="color: #cbd5e1; margin: 5px 0;"><i class="fas fa-map-marker-alt" style="color:#94a3b8; width: 15px;"></i> ${street}</p>
+                            <p style="color: #cbd5e1; margin: 5px 0;"><i class="fas fa-clock" style="color:#94a3b8; width: 15px;"></i> <span dir="ltr">${hours}</span></p>
+                        </div>
+                    `;
+
+                    let marker = L.marker([pLat, pLon], { icon: beerIcon });
+                    marker.bindPopup(popupContent);
+
+                    marker.on('mouseover', function () {
+                        this.openPopup();
+                    });
+
+                    markersArray.push(marker);
+                }
+            });
+
+            markersLayer.addLayers(markersArray);
+        },
+        error: function (err) {
+            $("#mapLoader").fadeOut();
+            console.error("שגיאה בשליפת הפאבים:", err);
+            alert("השרת העולמי מתקשה לעבד את כמות הנתונים בעיר הזו כרגע. נסה עיר אחרת.");
         }
     });
 }

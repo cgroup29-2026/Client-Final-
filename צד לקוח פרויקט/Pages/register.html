@@ -25,8 +25,22 @@
         </div>
         <nav>
             <ul>
-                <li><a href="../index.html">חזרה לדף הבית</a></li>
-                <li><a href="login.html" class="btn">להתחברות</a></li>
+                <li><a href="index.html">דף הבית</a></li>
+                <li><a href="my-lists.html">מפת הנסיעות שלי</a></li>
+                <li><a href="quizzes.html">חידונים</a></li>
+                <li><a href="nightlife.html" style="color: #f59e0b;"><i class="fas fa-beer"></i> חיי לילה</a></li>
+
+                <li id="adminLinkLi" style="display: none;">
+                    <a href="admin.html" style="color: #f59e0b; font-weight: bold;"><i class="fas fa-crown"></i> פאנל מנהל</a>
+                </li>
+
+                <li id="userGreetingLi" style="display: none;"><span id="userGreeting" style="font-weight: bold; color: #fff; margin: 0 15px;"></span></li>
+                <li id="editProfileLi" style="display: none;">
+                    <a href="#" id="btnEditProfile" style="color: #60a5fa;"><i class="fas fa-user-edit"></i> ערוך פרופיל</a>
+                </li>
+                <li id="logoutLi" style="display: none;"><a href="#" id="btnLogout">התנתקות</a></li>
+
+                <li id="loginLi" style="display: none;"><a href="login.html">התחברות</a></li>
             </ul>
         </nav>
     </header>

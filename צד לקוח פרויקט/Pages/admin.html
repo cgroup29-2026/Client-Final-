@@ -9,19 +9,32 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 <body class="admin-page-bg">
-    <!-- מסך טעינה - Preloader -->
     <div id="preloader">
         <div class="loader-content">
-            <!-- לוגו של גינס עם רקע שקוף -->
             <p>מוזג את הנתונים... 🍻</p>
         </div>
     </div>
     <header>
-        <div class="logo"><i class="fas fa-shield-alt"></i> אזור ניהול</div>
+        <div class="logo">
+            <i class="fas fa-globe-americas"></i> WorldExplorer
+        </div>
         <nav>
             <ul>
-                <li><a href="../index.html">חזרה לאתר</a></li>
-                <li id="logoutLi"><a href="#" id="btnLogout">התנתקות</a></li>
+                <li><a href="index.html">דף הבית</a></li>
+                <li><a href="my-lists.html">מפת הנסיעות שלי</a></li>
+                <li><a href="quizzes.html">חידונים</a></li>
+                <li><a href="nightlife.html" style="color: #f59e0b;"><i class="fas fa-beer"></i> חיי לילה</a></li>
+
+               
+
+                <li id="userGreetingLi" style="display: none;"><span id="userGreeting" style="font-weight: bold; color: #fff; margin: 0 15px;"></span></li>
+                <li id="editProfileLi" style="display: none;">
+                    <a href="#" id="btnEditProfile" style="color: #60a5fa;"><i class="fas fa-user-edit"></i> ערוך פרופיל</a>
+                </li>
+                <li id="logoutLi" style="display: none;"><a href="#" id="btnLogout">התנתקות</a></li>
+
+                <li id="loginLi" style="display: none;"><a href="login.html">התחברות</a></li>
+                <li id="registerLi" style="display: none;"><a href="register.html" class="btn" style="border: 1px solid #3b82f6; border-radius: 20px; padding: 5px 15px;">הרשמה</a></li>
             </ul>
         </nav>
     </header>
@@ -30,7 +43,6 @@
 
         <h1 style="color: white; text-align: center; margin-bottom: 40px;"><i class="fas fa-cogs"></i> לוח בקרת מנהל</h1>
 
-        <!-- כרטיסיות סטטיסטיקה -->
         <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 50px;">
             <div class="stat-card">
                 <i class="fas fa-users" style="color: #3b82f6;"></i>

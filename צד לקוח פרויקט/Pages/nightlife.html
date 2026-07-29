@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מפת חיי לילה - WorldExplorer</title>
+
+    <link rel="stylesheet" href="../css/StyleSheet.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <i class="fas fa-globe-americas"></i> WorldExplorer
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">דף הבית</a></li>
+                <li><a href="my-lists.html">מפת הנסיעות שלי</a></li>
+                <li><a href="quizzes.html">חידונים</a></li>
+
+                <li id="adminLinkLi" style="display: none;">
+                    <a href="admin.html" style="color: #f59e0b; font-weight: bold;"><i class="fas fa-crown"></i> פאנל מנהל</a>
+                </li>
+
+                <li id="userGreetingLi" style="display: none;"><span id="userGreeting" style="font-weight: bold; color: #fff; margin: 0 15px;"></span></li>
+                <li id="editProfileLi" style="display: none;">
+                    <a href="#" id="btnEditProfile" style="color: #60a5fa;"><i class="fas fa-user-edit"></i> ערוך פרופיל</a>
+                </li>
+                <li id="logoutLi" style="display: none;"><a href="#" id="btnLogout">התנתקות</a></li>
+
+                <li id="loginLi" style="display: none;"><a href="login.html">התחברות</a></li>
+                <li id="registerLi" style="display: none;"><a href="register.html" class="btn" style="border: 1px solid #3b82f6; border-radius: 20px; padding: 5px 15px;">הרשמה</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container fade-in-up" style="max-width: 1400px; margin-top: 40px; margin-bottom: 40px;">
+
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h1 style="color: #f59e0b; font-size: 2.5rem; margin-bottom: 10px; text-shadow: 0 2px 10px rgba(245,158,11,0.3);">
+                <i class="fas fa-map-marked-alt"></i> רדאר הפאבים העולמי
+            </h1>
+            <p style="color: #94a3b8; font-size: 1.2rem;">
+                הזן שם של עיר באנגלית, וגלה מיד איפה אפשר לשתות פיינט טוב של גינס, BrewDog מהחבית או איזה סינגל מאלט איכותי.
+            </p>
+        </div>
+
+        <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 30px;">
+            <input type="text" id="citySearchInput" placeholder="לדוגמה: Tel Aviv, Tokyo, London..." style="padding: 12px 20px; width: 400px; border-radius: 8px; border: 1px solid #f59e0b; background: rgba(15,23,42,0.8); color: white; font-size: 1.1rem; outline: none; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+            <button class="btn" onclick="searchNightlife()" style="background: linear-gradient(45deg, #f59e0b, #d97706); border: none; padding: 12px 30px; color: white; border-radius: 8px; font-weight: bold; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);">
+                חפש פאבים <i class="fas fa-search"></i>
+            </button>
+        </div>
+
+        <div id="nightlifeMap" style="width: 100%; height: 650px; border-radius: 15px; border: 2px solid rgba(245, 158, 11, 0.5); box-shadow: 0 10px 40px rgba(0,0,0,0.6); z-index: 1;"></div>
+
+    </main>
+
+    <script src="../JS/AjaxCall.js"></script>
+</body>
+</html>
